@@ -57,6 +57,7 @@ imagen médica:
 Estas particularidades motivan el diseño de arquitecturas y flujos de 
 preprocesamiento específicos para RM musculoesquelética.
 
+
 %==========================================================================
 \section{El conjunto de datos MRNet}
 \label{sec:mrnet}
@@ -81,8 +82,7 @@ y contraste entre vistas.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{imaxes/eda_muestras.png}
-\caption{Ejemplos representativos del conjunto de datos MRNet en los tres
-planos de adquisición. Fila superior: caso con lesión del LCA. Fila inferior:
+\caption{Fila superior: caso con lesión del LCA. Fila inferior:
 caso sin lesión. De izquierda a derecha: plano sagital, coronal y axial.}
 \label{fig:mrnet_planos}
 \end{figure}
@@ -93,6 +93,8 @@ Capítulo~\ref{chap:preparacion}, donde se discuten sus implicaciones sobre el
 diseño del sistema. Los trabajos que han empleado MRNet como banco de pruebas
 se revisan en la sección siguiente; los enfoques basados en otros conjuntos de
 datos se describen en la Sección~\ref{subsec:otros_datasets}.
+
+
 
 %==========================================================================
 \section{Trabajos previos en detección de lesiones del LCA}
@@ -200,7 +202,6 @@ comparación directa entre métodos, pero plantea dudas sobre la capacidad de
 generalización de los modelos a otros centros hospitalarios con equipos y
 secuencias distintos, cuestión que permanece en gran medida abierta en la
 literatura~\cite{chea2020}.
-
 %==========================================================================
 \section{Técnicas de preprocesamiento en MRI}
 \label{sec:preprocesamiento_arte}

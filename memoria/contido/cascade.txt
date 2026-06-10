@@ -111,7 +111,7 @@ alternativos:
           excedía las limitaciones de memoria y tiempo de la GPU Tesla T4 
           empleada en el desarrollo. Una ejecución complementaria realizada 
           en un equipo con GPU de mayor capacidad confirmó que ResNet-50 no 
-          mejora los resultados (AUC de 0,823 frente a 0,833 con ResNet-18), 
+          mejora los resultados (AUC de 0,823 frente a 0,838 con ResNet-18), 
           lo que indica que el cuello de botella del sistema no está en la 
           capacidad del \textit{backbone} sino en el tamaño limitado del 
           conjunto de datos.
@@ -536,7 +536,7 @@ proceso de entrenamiento.
 
 \subsection{Hiperparámetros}
 
-La Tabla~\ref{tab:hiperparametros} resume los hiperparámetros del sistema 
+El cuadro~\ref{tab:hiperparametros} resume los hiperparámetros del sistema 
 en su configuración final.
 
 \begin{table}[H]

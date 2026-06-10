@@ -17,8 +17,7 @@ el análisis de errores y la aplicación del sistema a un caso clínico real.
 %==========================================================================
 
 El sistema se evaluó mediante validación cruzada estratificada de 5
-\textit{folds}~\cite{kohavi1995} sobre los 1\,250 casos del conjunto de datos MRNet. La 
-Tabla~\ref{tab:resultados_cv} recoge las métricas obtenidas en cada 
+\textit{folds}~\cite{kohavi1995} sobre los 1\,250 casos del conjunto de datos MRNet. El cuadro~\ref{tab:resultados_cv} recoge las métricas obtenidas en cada 
 \textit{fold} para la detección de lesiones del LCA, junto con el umbral 
 clínico seleccionado de forma independiente en cada uno.
 
@@ -104,8 +103,8 @@ indican el punto de detención temprana.}
 %==========================================================================
 
 La Fase 1 del sistema, encargada de la detección de anomalías generales, se 
-evaluó de forma independiente sobre los mismos \textit{folds}. La 
-Tabla~\ref{tab:fase1} recoge los resultados obtenidos.
+evaluó de forma independiente sobre los mismos \textit{folds}.El 
+cuadro~\ref{tab:fase1} recoge los resultados obtenidos.
 
 \begin{table}[H]
 \centering
@@ -141,7 +140,7 @@ la carga computacional sin comprometer la detección de casos patológicos.
 
 Para validar la estrategia de fusión ponderada, se realizó un estudio de 
 ablación evaluando el rendimiento del sistema utilizando cada plano de forma 
-aislada y distintas combinaciones. La Tabla~\ref{tab:ablacion_plano} recoge los 
+aislada y distintas combinaciones. El cuadro~\ref{tab:ablacion_plano} recoge los 
 resultados sobre el mejor \textit{fold}.
 
 \begin{table}[H]
@@ -187,7 +186,7 @@ métricas y validar el impacto de las principales decisiones de diseño.
 
 \subsection{Intervalos de confianza}
 
-La Tabla~\ref{tab:ic} recoge los intervalos de confianza al 95\,\% de las 
+El cuadro~\ref{tab:ic} recoge los intervalos de confianza al 95\,\% de las 
 métricas principales, calculados a partir de los resultados de los cinco 
 \textit{folds}.
 
@@ -284,7 +283,7 @@ Una de las contribuciones del trabajo es la aplicación de
 GradCAM++~\cite{chattopadhay2018} sobre el corte que el modelo realmente
 utiliza para su predicción, en lugar del corte geométricamente central. Para cuantificar la relevancia de esta decisión, se 
 analizó la distancia entre el corte de máxima atención y el corte central del 
-volumen. La Tabla~\ref{tab:offset} recoge los resultados.
+volumen. El cuadro~\ref{tab:offset} recoge los resultados.
 
 \begin{table}[H]
 \centering
