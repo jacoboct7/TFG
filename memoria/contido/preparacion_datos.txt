@@ -1,0 +1,366 @@
+\chapter[Preparación de datos]{Preparación y análisis de datos}
+\label{chap:preparacion}
+
+\lettrine{E}{l} presente capítulo detalla el proceso de exploración, análisis y 
+preprocesamiento del conjunto de datos MRNet empleado en este trabajo. Se 
+documenta el análisis exploratorio que justifica las decisiones de diseño del 
+flujo de preprocesamiento, se describe cada etapa aplicada y se presenta el 
+estudio de ablación realizado para evaluar el impacto del aumento de datos.
+
+%==========================================================================
+\section{Descripción del conjunto de datos}
+\label{sec:descripcion_dataset}
+%==========================================================================
+
+Como se introdujo en el Capítulo~\ref{chap:estado_arte}, el conjunto de datos 
+MRNet v1.0 fue publicado por el Stanford ML Group en 2018~\cite{bien2018} y 
+contiene estudios de resonancia magnética de rodilla del Stanford University 
+Medical Center. Para el presente trabajo se unifican los conjuntos de entrenamiento 
+(1\,130 casos) y validación (120 casos) originales, obteniendo un total de 1\,250 casos 
+disponibles\footnote{El conjunto de test original (120 casos) no es público y 
+por tanto no se utiliza.}.
+
+Cada caso consta de tres volúmenes correspondientes a los planos de adquisición 
+sagital, coronal y axial. Los volúmenes se almacenan como matrices \textit{NumPy} de tipo 
+\textit{uint8} con resolución de 256$\times$256 píxeles por corte y rango de 
+valores entre 0 y 255. El número de cortes varía entre casos y entre planos 
+dentro de un mismo caso, reflejando las diferencias en los protocolos de 
+adquisición empleados a lo largo del periodo de recopilación (2001--2012).
+
+Las etiquetas diagnósticas son binarias e independientes entre sí: un mismo caso 
+puede presentar anomalía general, lesión del LCA y lesión meniscal 
+simultáneamente. La Tabla~\ref{tab:distribucion} muestra la distribución de 
+etiquetas en el conjunto de datos completo.
+
+\begin{table}[htb]
+\centering
+\caption{Distribución de etiquetas diagnósticas en el conjunto de datos MRNet 
+(1\,250 casos).}
+\label{tab:distribucion}
+\rowcolors{2}{white}{udcgray!25}
+\begin{tabular}{lrrr}
+\rowcolor{udcpink!25}
+\textbf{Patología} & \textbf{Positivos} & \textbf{Negativos} & 
+\textbf{Prevalencia} \\\hline
+Anomalía general & 1\,008 & 242 & 80,6\,\% \\
+Lesión del LCA   & 262    & 988 & 21,0\,\% \\
+Lesión meniscal  & 449    & 801 & 35,9\,\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El desbalanceo es especialmente relevante para la etiqueta del LCA, donde la clase
+positiva representa solo el 21,0\,\% de los casos (ratio aproximado 1:4). Un
+clasificador trivial que predijera siempre la clase mayoritaria (negativo)
+alcanzaría una precisión del 79\,\%, lo que subraya la necesidad de emplear
+métricas de evaluación apropiadas como la sensibilidad, la especificidad y el AUC.
+
+La Figura~\ref{fig:eda_labels} visualiza esta distribución, donde se aprecia 
+claramente el desbalanceo en las tres etiquetas, siendo la del LCA la más acusada.
+\begin{figure}[htb]
+\centering
+\includegraphics[width=1\textwidth]{imaxes/eda_labels.png}
+\caption{Se observa el marcado desbalanceo en la etiqueta del LCA (21,0\,\% de positivos).}
+\label{fig:eda_labels}
+\end{figure}
+
+%==========================================================================
+\section{Análisis exploratorio}
+\label{sec:eda}
+%==========================================================================
+
+Se realiza un análisis exploratorio exhaustivo del conjunto de datos con el doble 
+objetivo de comprender sus características y justificar las decisiones de 
+preprocesamiento.
+
+\subsection{Distribución de cortes por plano}
+\label{subsec:cortes}
+
+El número de cortes por volumen varía considerablemente entre casos y entre 
+planos. La Tabla~\ref{tab:cortes} resume las estadísticas descriptivas.
+
+\begin{table}[htb]
+\centering
+\caption{Estadísticas del número de cortes por plano en el conjunto de datos 
+MRNet.}
+\label{tab:cortes}
+\rowcolors{2}{white}{udcgray!25}
+\begin{tabular}{lrrrr}
+\rowcolor{udcpink!25}
+\textbf{Plano} & \textbf{Mínimo} & \textbf{Máximo} & \textbf{Media} & 
+\textbf{Mediana} \\\hline
+Sagital  & 17 & 51 & 30,4 & 30 \\
+Coronal  & 17 & 58 & 29,7 & 30 \\
+Axial    & 19 & 61 & 34,3 & 35 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La Figura~\ref{fig:eda_slices} muestra los histogramas de distribución de 
+cortes para cada plano, con la mediana y el valor objetivo de 32 cortes 
+marcados como referencia.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=1\textwidth]{imaxes/eda_slices.png}
+\caption{La línea roja discontinua 
+indica la mediana de cada plano y la línea negra punteada el valor objetivo de 
+32 cortes seleccionado para la estandarización. El plano axial presenta una 
+mediana ligeramente superior (35) y mayor variabilidad que los planos sagital 
+y coronal.}
+\label{fig:eda_slices}
+\end{figure}
+
+Esta variabilidad justifica la necesidad de estandarizar la dimensión de cortes,
+estrategia detallada en la Sección~\ref{subsec:seleccion_cortes}.
+
+subsection{Visualización de muestras}
+\label{subsec:muestras}
+
+Como ilustra la Figura~\ref{fig:mrnet_planos} del
+Capítulo~\ref{chap:estado_arte}, cada caso incluye cortes representativos en los
+tres planos de adquisición. El plano sagital (vista lateral) es el que mejor
+permite visualizar el trayecto completo del ligamento cruzado anterior,
+mostrando su inserción en el fémur y la tibia. El plano coronal (vista frontal)
+expone la superficie de la meseta tibial y los meniscos, mientras que el plano
+axial (vista superior) ofrece una perspectiva transversal de la articulación. Al
+tratarse de una estructura tridimensional, el análisis multiplanar es
+imprescindible para una evaluación diagnóstica completa~\cite{phelan2016}.
+
+Todas las imágenes son monocanal (escala de grises), lo que requiere adaptar 
+la primera capa convolucional del \textit{backbone} 
+ResNet-18~\cite{he2016}, originalmente diseñada para imágenes RGB de 3 canales, 
+a una entrada de 1 canal.
+
+
+%==========================================================================
+\section{Flujo de preprocesamiento}
+\label{sec:flujo_preprocesamiento}
+%==========================================================================
+
+El flujo de preprocesamiento se aplica en un orden específico, donde cada 
+etapa se justifica por las observaciones del análisis exploratorio y por la 
+evidencia de la literatura. Las etapas, en orden de aplicación, son:
+
+\begin{enumerate}
+    \item Selección o rellenado de cortes
+    \item Recorte central
+    \item Redimensionado a 224$\times$224
+    \item CLAHE
+    \item Máscara de atención anatómica (solo plano sagital)
+    \item Normalización min-max
+    \item Aumento de datos (solo en entrenamiento)
+\end{enumerate}
+
+\subsection{Selección y rellenado de cortes}
+\label{subsec:seleccion_cortes}
+
+Para estandarizar la dimensión de cortes a 32, se aplican dos estrategias 
+complementarias:
+
+\begin{itemize}
+    \item \textbf{Volúmenes con más de 32 cortes:} se seleccionan los 32 
+          cortes centrales, descartando los extremos del volumen que 
+          típicamente contienen información de menor relevancia anatómica.
+    \item \textbf{Volúmenes con menos de 32 cortes:} se rellenan 
+          simétricamente mediante replicación de bordes (\textit{edge 
+          padding}), donde el primer y último corte se replican las veces 
+          necesarias para alcanzar los 32 cortes objetivo.
+\end{itemize}
+
+\subsection{Recorte central}
+\label{subsec:center_crop}
+
+Se aplica un recorte central suave que elimina el 2,5\,\% de cada borde de la 
+imagen, conservando el 95\,\% central. Este recorte tiene como objetivo 
+eliminar los artefactos de borde producidos por la bobina de RM, que se 
+manifiestan como variaciones de intensidad en la periferia de la imagen y que 
+pueden confundir al modelo durante el entrenamiento.
+
+La elección de un factor de recorte del 95\,\% responde a la observación
+empírica de que valores más agresivos pueden eliminar información clínicamente
+relevante cuando el LCA no se encuentra centrado geométricamente en la imagen.
+
+\subsection{Redimensionado}
+\label{subsec:resize}
+
+Tras el recorte, las imágenes resultantes se redimensionan a 224$\times$224
+píxeles mediante interpolación bilineal. Esta resolución coincide con la entrada
+nativa de ResNet-18 preentrenada en ImageNet~\cite{deng2009} y conserva un mayor
+nivel de detalle anatómico que la alternativa de 128$\times$128, al tiempo que
+permite mantener tamaños de lote razonables dentro de las limitaciones de memoria
+de la GPU disponible. La resolución original de 256$\times$256 píxeles resultó
+excesiva en términos de coste computacional, impidiendo procesar más de un caso
+por lote en el entorno de ejecución utilizado.
+
+\subsection{CLAHE: realce de contraste adaptativo local}
+\label{subsec:clahe_aplicacion}
+
+Se aplica CLAHE~\cite{pizer1987} (descrito en la 
+Sección~\ref{subsec:clahe}) a cada corte de cada volumen, empleando los 
+siguientes parámetros:
+
+\begin{itemize}
+    \item \textbf{Límite de recorte} (\textit{clip limit}) $= 2{,}0$: controla 
+          la amplificación máxima del contraste. Valores superiores pueden 
+          amplificar excesivamente el ruido, mientras que valores inferiores 
+          reducen el efecto de realce.
+    \item \textbf{Tamaño de rejilla} (\textit{grid size}) $= 8 \times 8$: 
+          define el número de bloques en los que se divide la imagen para la 
+          ecualización local. Una cuadrícula de $8 \times 8$ proporciona un 
+          balance adecuado entre localidad del realce y suavidad de las 
+          transiciones entre bloques.
+\end{itemize}
+
+La implementación se realiza mediante la función \textit{cv2.createCLAHE} de 
+OpenCV~\cite{bradski2000}, aplicada sobre cada corte convertido a tipo 
+\textit{uint8}. El resultado se normaliza de vuelta al rango $[0, 1]$ antes de 
+continuar con las siguientes etapas.
+
+La Figura~\ref{fig:clahe_comparativa} ilustra el efecto de CLAHE sobre un corte 
+sagital del conjunto de datos MRNet. La imagen original presenta un pico 
+pronunciado de intensidades en valores bajos, mientras que tras CLAHE la 
+distribución se expande cubriendo un rango más amplio, lo que se traduce en una 
+mayor visibilidad de los bordes internos del tejido blando.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=1\textwidth]{imaxes/preprocessing.png}
+\caption{Efecto de CLAHE y máscara anatómica sobre un corte sagital de RM de 
+rodilla. Izquierda: imagen original. Derecha: imagen tras la aplicación de 
+CLAHE (\textit{clip\_limit}~=~2,0, \textit{grid\_size}~=~8$\times$8) y 
+máscara anatómica gaussiana.}
+\label{fig:clahe_comparativa}
+\end{figure}
+
+La contribución de CLAHE al rendimiento del modelo se valida experimentalmente 
+mediante un estudio de ablación con análisis de significancia estadística (véase 
+el Capítulo~\ref{chap:resultados}), observándose una mejora estadísticamente 
+significativa del AUC ($p = 0{,}003$, test~$t$ pareado).
+
+\subsection{Máscara de atención anatómica}
+\label{subsec:mascara}
+
+Se diseña una máscara de atención espacial en forma de gaussiana bidimensional 
+que pondera las regiones de la imagen según su relevancia anatómica para la 
+detección del LCA. La máscara se aplica exclusivamente al plano sagital, donde 
+la localización del LCA es anatómicamente predecible: la región intercondílea, 
+ligeramente por encima del centro vertical de la imagen.
+
+La máscara se define formalmente como:
+
+\begin{equation}
+M(y, x) = (1 - w_{min}) \cdot \exp\left(-\frac{(y - c_y)^2}{2\sigma_y^2} - 
+\frac{(x - c_x)^2}{2\sigma_x^2}\right) + w_{min}
+\label{eq:mascara}
+\end{equation}
+
+donde $(c_y, c_x) = (0{,}40;\; 0{,}50)$ es el centro de la gaussiana en 
+coordenadas normalizadas, $(\sigma_y, \sigma_x) = (0{,}30;\; 0{,}35)$ 
+controlan la dispersión vertical y horizontal, y $w_{min} = 0{,}3$ es el peso 
+mínimo aplicado en los bordes de la imagen.
+
+La elección de $c_y = 0{,}40$ (ligeramente por encima del centro vertical) 
+responde a la localización anatómica del LCA en la muesca intercondílea. La 
+dispersión se configura con valores relativamente amplios para evitar un 
+recorte excesivo de la periferia. El peso mínimo $w_{min} = 0{,}3$ garantiza 
+que ninguna región de la imagen queda completamente ignorada, preservando la 
+capacidad del modelo de detectar hallazgos inesperados fuera de la zona de 
+interés principal.
+
+La máscara no se aplica a los planos coronal y axial, ya que la localización
+del LCA difiere sustancialmente en estos planos y una máscara fija podría
+eliminar información relevante en lugar de potenciarla. El plano coronal es
+especialmente relevante para la detección de lesiones meniscales, cuya
+localización anatómica no coincide con la región intercondílea centrada por
+la máscara. En el plano axial, la localización del LCA presenta mayor
+variabilidad en esta perspectiva, por lo que la aplicación de una máscara
+fija tampoco resulta adecuada.
+
+\subsection{Normalización}
+\label{subsec:normalizacion}
+
+Tras la aplicación de CLAHE y la máscara anatómica, cada volumen se normaliza 
+individualmente al rango $[0, 1]$ mediante normalización min-max:
+
+\begin{equation}
+I_{norm} = \frac{I - I_{min}}{I_{max} - I_{min} + \epsilon}
+\end{equation}
+
+donde $\epsilon = 10^{-8}$ evita la división por cero en volúmenes con rango 
+de intensidad nulo. La normalización se aplica por volumen (no por corte) para 
+preservar las relaciones de intensidad entre cortes adyacentes, que pueden ser 
+informativas para la detección de lesiones.
+
+\subsection{Aumento de datos}
+\label{subsec:augmentation}
+
+Durante el entrenamiento se aplican transformaciones aleatorias a cada volumen 
+con el objetivo de incrementar la variabilidad del conjunto de entrenamiento y 
+reducir el sobreajuste~\cite{shorten2019}. Las transformaciones se dividen en 
+dos grupos: geométricas y de intensidad.
+
+Las transformaciones \textbf{geométricas} simulan variaciones en la posición 
+del paciente y el protocolo de adquisición:
+
+\begin{itemize}
+    \item \textbf{Rotación aleatoria} ($\pm 8^\circ$, prob.\ 0,5): simula 
+          variaciones menores en la orientación del paciente durante la 
+          adquisición. Se emplea un ángulo moderado para no distorsionar la 
+          anatomía de forma irrealista.
+    
+    \item \textbf{Zoom aleatorio} ($\pm 10\,\%$, prob.\ 0,5): simula 
+          variaciones en el campo de visión del escáner. Si el factor de 
+          escala es mayor que 1, se realiza un recorte central del resultado; 
+          si es menor, se rellena con replicación de bordes.
+\end{itemize}
+
+Las transformaciones de \textbf{intensidad} simulan variaciones en las 
+condiciones de adquisición de la señal de RM:
+
+\begin{itemize}
+    \item \textbf{Ajuste de brillo:} la intensidad de cada píxel se transforma 
+          según $I' = \alpha I + \beta$, con $\alpha \sim \mathcal{U}(0{,}9;\; 
+          1{,}1)$ y $\beta \sim \mathcal{U}(-0{,}05;\; 0{,}05)$. 
+          Probabilidad de aplicación: 0,5.
+    
+    \item \textbf{Ruido gaussiano} ($\sigma = 0{,}01$, prob.\ 0,5): añade 
+          ruido de baja amplitud que actúa como regularizador.
+    
+    \item \textbf{Desenfoque gaussiano} ($\sigma \sim \mathcal{U}(0{,}3;\; 
+          0{,}7)$, prob.\ 0,7): simula variaciones en la calidad de 
+          adquisición y actúa como regularizador adicional.
+    
+    \item \textbf{Corrección gamma} ($\gamma \sim \mathcal{U}(0{,}8;\; 
+          1{,}2)$, prob.\ 0,5): varía el contraste de forma no lineal 
+          mediante $I' = I^\gamma$, complementando el ajuste de brillo lineal.
+\end{itemize}
+
+Se descartaron otras transformaciones habituales en visión por computador por
+razones anatómicas. El volteo horizontal no se aplica porque la orientación de
+la rodilla (izquierda frente a derecha) es anatómicamente relevante y su
+inversión produciría imágenes incorrectas. Las deformaciones elásticas se
+descartaron por el riesgo de distorsionar estructuras anatómicas finas como
+el LCA, cuya apariencia visual depende críticamente de su forma y continuidad.
+La evaluación cuantitativa del impacto del aumento de datos se presenta en la
+Sección~\ref{sec:ablacion_aug} del Capítulo~\ref{chap:resultados}.
+
+%==========================================================================
+\section{Implementación}
+\label{sec:implementacion_dataset}
+%==========================================================================
+
+El flujo de preprocesamiento descrito se implementa como una clase 
+\textit{MRNetDataset} que hereda de \textit{torch.utils.data.Dataset}, 
+siguiendo las convenciones de PyTorch~\cite{paszke2019} para la carga eficiente 
+de datos. La clase encapsula todas las etapas del flujo y permite configurar la 
+activación del aumento de datos mediante un parámetro booleano, lo que facilita 
+la diferenciación entre el comportamiento de entrenamiento y evaluación.
+
+La máscara anatómica se precalcula en el constructor de la clase y se almacena 
+como un atributo, evitando su recomputación en cada acceso a un ejemplo. El 
+objeto CLAHE de OpenCV se instancia una única vez por llamada al método de 
+carga, minimizando la sobrecarga computacional. El preprocesamiento se aplica 
+durante la carga de cada ejemplo, lo que evita la necesidad de almacenar los 
+datos preprocesados en disco y permite que el aumento de datos genere 
+variaciones diferentes en cada época de entrenamiento.

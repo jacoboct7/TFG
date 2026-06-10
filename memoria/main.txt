@@ -1,0 +1,218 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TRABAJO FIN DE GRADO - GRADO EN CIENCIA E INGENIERÍA DE DATOS
+% Universidad da Coruña - Facultade de Informática
+%
+% Autor: Jacobo Cousillas Taboada
+% Tutores: Laura Morán Fernández y Daniel Vila de la Cruz
+%
+% Título: Desarrollo de un Sistema de Clasificación Automática de Lesiones 
+%         de Rodilla en Resonancia Magnética
+%
+% Fecha: 2025/26
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[a4paper,12pt,oneside,openany]{book}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PAQUETES Y CONFIGURACIÓN
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Matemáticas
+\usepackage{amsmath,amssymb,amsthm}
+
+% Gráficos y figuras
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{caption}
+\usepackage{float}
+
+% Tablas
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{xcolor}
+
+% OPCIONAL: Tablas largas (descomentar si necesitas tablas de varias páginas)
+% \usepackage{longtable}
+
+% Código fuente
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Hipervínculos
+\usepackage{url}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+% Letra capital (lettrine)
+\usepackage{lettrine}
+
+% Texto de relleno (BORRAR en versión final)
+\usepackage{blindtext}
+
+% Referencias y bibliografía
+
+
+% Acrónimos y glosario (OPCIONAL - descomentar si usas)
+% \usepackage[acronym]{glossaries}
+% \makeglossaries
+% \input{bibliografia/acronimos}
+% \input{bibliografia/glosario}
+\def\lingua{esp}
+\def\titulacion{gced}
+\def\nome{Jacobo Cousillas Taboada}
+\def\titulo{Detección de lesiones del ligamento cruzado anterior en resonancias magnéticas de rodilla mediante aprendizaje profundo}
+\def\nomedirectorA{Laura Morán Fernández}
+\def\nomedirectorB{Daniel Vila de la Cruz}
+% Estilo del TFG (colores UDC, márgenes, etc.)
+\usepackage{estilo_tfg}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CONFIGURACIÓN DE CÓDIGO FUENTE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{red},
+  showstringspaces=false,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  captionpos=b,
+  tabsize=2
+}
+
+% Configuración específica para Python
+\lstdefinestyle{python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!60!black}\itshape,
+  stringstyle=\color{orange},
+  showstringspaces=false,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny\color{gray}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% INFORMACIÓN DEL DOCUMENTO
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Desarrollo de un Sistema de Clasificación Automática de Lesiones de Rodilla en Resonancia Magnética}
+\author{Jacobo Cousillas Taboada}
+\date{Marzo 2026}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% INICIO DEL DOCUMENTO
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PORTADA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{portada/portada}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PÁGINAS PRELIMINARES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+% Dedicatoria (OPCIONAL - comentar si no quieres)
+\chapter*{Dedicatoria}
+
+\thispagestyle{empty}
+\vspace*{5cm}
+\begin{flushright}
+
+\end{flushright}
+\cleardoublepage
+
+% Agradecimientos (OPCIONAL - comentar si no quieres)
+\chapter*{Agradecimientos}
+\addcontentsline{toc}{chapter}{Agradecimientos}
+
+
+% Resumen
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+
+
+% Abstract
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ÍNDICES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Índice general
+\tableofcontents
+\cleardoublepage
+
+% Índice de figuras
+\listoffigures
+\cleardoublepage
+
+% Índice de tablas
+\listoftables
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CONTENIDO PRINCIPAL
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\mainmatter
+
+\input{contido/introducion}
+\input{contido/estado_arte}
+\input{contido/preparacion_datos}
+\input{contido/cascade}
+\input{contido/resultados}
+\input{contido/conclusiones}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% APÉNDICES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix
+
+% Apéndice A: Material Adicional
+%\input{anexos/adicional}
+
+% Apéndice B: Código Fuente (OPCIONAL)
+% \input{anexos/codigo}
+
+% Apéndice C: Configuración Experimental (OPCIONAL)
+% \input{anexos/configuracion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MATERIAL FINAL
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\backmatter
+
+% Acrónimos y Glosario (OPCIONAL - descomentar si usas)
+% \printglossary[type=\acronymtype,title=Relación de Acrónimos]
+% \printglossary[title=Glosario]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BIBLIOGRAFÍA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{plain}
+\bibliography{bibliografia/bibliografia.bib}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FIN DEL DOCUMENTO
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

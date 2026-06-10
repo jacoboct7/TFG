@@ -1,0 +1,584 @@
+\chapter{Metodología CASCADE}
+\label{chap:cascade}
+
+\lettrine{E}{ste} capítulo describe en detalle la arquitectura del sistema 
+propuesto, las decisiones de diseño adoptadas y el procedimiento de 
+entrenamiento y evaluación. El desarrollo del sistema sigue un enfoque 
+iterativo cuyas principales etapas se resumieron en la introducción; en este 
+capítulo se presenta la arquitectura final resultante de dicho proceso, 
+justificando cada componente a partir de los problemas identificados en 
+versiones anteriores.
+
+La Figura~\ref{fig:flujo_cascade} muestra de forma esquemática el flujo 
+completo del sistema, desde la entrada de los volúmenes preprocesados hasta 
+la generación de reportes clínicos.
+
+\begin{figure}[H]
+\centering
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[
+    node distance=0.6cm and 0.5cm,
+    block/.style={rectangle, draw=udcpink, fill=udcpink!8, 
+        text width=3.0cm, minimum height=1.4cm, align=center, 
+        font=\footnotesize, rounded corners=4pt, line width=0.6pt},
+    phase/.style={rectangle, draw=ficblue, fill=ficblue!8, 
+        text width=3.0cm, minimum height=1.4cm, align=center, 
+        font=\footnotesize, rounded corners=4pt, line width=0.6pt},
+    arrow/.style={->, >=stealth, line width=0.7pt, color=udcgray!80},
+    rowlabel/.style={font=\scriptsize\bfseries, color=udcgray, rotate=90, 
+        anchor=center}
+]
+\node[block] (input) at (0,0) {Volúmenes\\preprocesados\\[2pt]\scriptsize 32$\times$224$\times$224};
+\node[phase, right=of input] (p1) {Fase 1: Triaje\\[2pt]\scriptsize Anomalía general\\[-1pt]\scriptsize Focal Loss};
+\node[phase, right=of p1] (p2) {Fase 2: LCA\\[2pt]\scriptsize + Menisco\\[-1pt]\scriptsize WeightedBCE};
+\node[phase, right=of p2] (attn) {\textit{Attention pooling}\\[2pt]\scriptsize Fusión ponderada\\[-1pt]\scriptsize en probabilidades};
+\node[block, right=of attn] (output) {Umbral clínico\\[2pt]\scriptsize Sens $\geq$ 85\,\%\\[-1pt]\scriptsize Reportes};
+\draw[arrow] (input) -- (p1);
+\draw[arrow] (p1) -- (p2);
+\draw[arrow] (p2) -- (attn);
+\draw[arrow] (attn) -- (output);
+\end{tikzpicture}%
+}
+\caption{Flujo general del sistema CASCADE.}
+\label{fig:flujo_cascade}
+\end{figure}
+
+%==========================================================================
+\section{Visión general de la arquitectura}
+\label{sec:vision_general}
+%==========================================================================
+
+El sistema propuesto, denominado CASCADE (\textit{Clinical Assessment System 
+for Computer Aided Detection and Evaluation}), se estructura en dos fases 
+secuenciales que reflejan el flujo de trabajo de un radiólogo ante un estudio 
+de RM de rodilla:
+
+\begin{enumerate}
+    \item \textbf{Fase 1 (Triaje):} un detector binario de anomalías generales 
+          que determina si la rodilla presenta algún hallazgo patológico. Esta 
+          fase actúa como filtro inicial, identificando los casos claramente 
+          normales, y proporciona además una salida interpretable para los 
+          reportes clínicos.
+    \item \textbf{Fase 2 (Clasificación):} un clasificador multitarea que 
+          detecta de forma simultánea lesiones del ligamento cruzado anterior y 
+          alteraciones meniscales, combinando la información de los tres planos 
+          anatómicos mediante fusión ponderada.
+\end{enumerate}
+
+Cada fase emplea tres redes ResNet-18~\cite{he2016} independientes, una por 
+plano anatómico (sagital, coronal, axial), para un total de seis modelos en 
+el sistema completo.
+
+%==========================================================================
+\section{\textit{Backbone}: ResNet-18}
+\label{sec:backbone}
+%==========================================================================
+
+Como \textit{backbone} de cada rama del sistema se emplea 
+ResNet-18~\cite{he2016}, preentrenada en ImageNet~\cite{deng2009}. La 
+justificación de esta elección se detalló en el estado del arte 
+(Sección~\ref{subsec:resnet}); en esta sección se describe su adaptación 
+concreta al dominio de la RM y los resultados de la comparativa con 
+arquitecturas alternativas.
+
+\subsection{Adaptación al dominio}
+\label{subsec:adaptacion}
+
+La ResNet-18 original está diseñada para imágenes RGB de 3 canales. Para 
+adaptarla a las imágenes monocanal de RM, se sustituye la primera capa 
+convolucional (\texttt{conv1}) por una nueva capa con 1 canal de entrada 
+en lugar de 3, manteniendo el resto de la arquitectura (64 filtros de 
+$7 \times 7$, \textit{stride} 2, \textit{padding} 3). Los pesos de la 
+nueva \texttt{conv1} se inicializan aleatoriamente, mientras que el resto 
+de la red conserva los pesos preentrenados en ImageNet.
+
+La capa de clasificación original (\texttt{fc}) de 1\,000 clases se 
+sustituye por una secuencia de Dropout~\cite{srivastava2014} (0,5) seguido 
+de una capa lineal que produce el número de salidas requerido: 1 para la 
+Fase 1 (anomalía) y 2 para la Fase 2 (LCA y menisco).
+
+\subsection{Evaluación de \textit{backbones} alternativos}
+\label{sec:backbones}
+
+Para verificar que ResNet-18 es la opción más adecuada dentro de las 
+restricciones computacionales del entorno (GPU Tesla T4, 16~GB VRAM, 
+sesiones de máximo 12 horas), se evaluaron dos \textit{backbones} 
+alternativos:
+
+\begin{itemize}
+    \item \textbf{ResNet-50:} con 23,5 millones de parámetros por modelo 
+          (141 millones en total para las seis redes), esta arquitectura 
+          excedía las limitaciones de memoria y tiempo de la GPU Tesla T4 
+          empleada en el desarrollo. Una ejecución complementaria realizada 
+          en un equipo con GPU de mayor capacidad confirmó que ResNet-50 no 
+          mejora los resultados (AUC de 0,823 frente a 0,833 con ResNet-18), 
+          lo que indica que el cuello de botella del sistema no está en la 
+          capacidad del \textit{backbone} sino en el tamaño limitado del 
+          conjunto de datos.
+    
+    \item \textbf{EfficientNet-B0~\cite{tan2019}:} a pesar de tener menos 
+          parámetros que ResNet-18 (5,3 millones por modelo), esta 
+          arquitectura presentaba una convergencia significativamente más 
+          lenta. Tras 11 épocas (12 horas de ejecución), la pérdida de 
+          validación apenas había descendido de 0,84 a 0,64, mientras que 
+          ResNet-18 alcanzaba valores similares en 4 épocas. Esta lentitud 
+          se atribuye a las operaciones de convolución \textit{depthwise 
+          separable} y los bloques \textit{squeeze-and-excitation}, que 
+          aunque son eficientes en parámetros, resultan más lentos en la 
+          propagación directa cuando se procesan 6 modelos simultáneamente 
+          con 32 cortes por volumen.
+\end{itemize}
+
+Estos resultados confirman que ResNet-18 ofrece el mejor compromiso entre 
+capacidad representativa, velocidad de entrenamiento y compatibilidad con 
+las restricciones computacionales del entorno.
+
+%==========================================================================
+\section{\textit{Attention pooling} sobre cortes}
+\label{sec:attention_pooling_cascade}
+%==========================================================================
+
+Cada volumen de RM consta de 32 cortes (tras la estandarización descrita 
+en el Capítulo~\ref{chap:preparacion}). Para obtener una predicción a nivel 
+de volumen a partir de las predicciones individuales de cada corte, es 
+necesario un mecanismo de agregación. Las versiones iniciales del sistema 
+(v2--v4) empleaban \textit{max pooling}, seleccionando la activación máxima 
+entre los 32 cortes. Este enfoque, adoptado también en el trabajo original 
+de Bien et al.~\cite{bien2018}, presenta una limitación fundamental: toda 
+la predicción del volumen depende de un único corte, descartando la 
+información de los cortes adyacentes que pueden contener evidencia 
+complementaria sobre la extensión y naturaleza de la lesión.
+
+Para superar esta limitación, a partir de la versión v6 del sistema se 
+implementa un módulo de \textit{attention pooling} que aprende a asignar 
+un peso a cada corte en función de su relevancia para la tarea de 
+clasificación. El módulo se define como:
+
+\begin{equation}
+\alpha_s = \frac{\exp(g(\mathbf{h}_s))}{\sum_{j=1}^{S} 
+\exp(g(\mathbf{h}_j))}, \quad 
+\mathbf{o} = \sum_{s=1}^{S} \alpha_s \cdot \mathbf{h}_s
+\label{eq:attention}
+\end{equation}
+
+donde $\mathbf{h}_s \in \mathbb{R}^{d}$ es el vector de características 
+producido por la ResNet-18 para el corte $s$ (con $d$ igual al número de 
+salidas de la capa \texttt{fc}: 1 para Fase 1, 2 para Fase 2), y $g$ es 
+una red de atención implementada como un perceptrón multicapa de dos capas:
+
+\begin{equation}
+g(\mathbf{h}) = \mathbf{w}_2^T \cdot \tanh(\mathbf{W}_1 \mathbf{h} + 
+\mathbf{b}_1) + b_2
+\label{eq:attention_mlp}
+\end{equation}
+
+con $\mathbf{W}_1 \in \mathbb{R}^{64 \times d}$ y $\mathbf{w}_2 \in 
+\mathbb{R}^{64}$. La función $\tanh$ introduce no linealidad y la 
+normalización \textit{softmax} garantiza que los pesos $\alpha_s$ sumen 1.
+
+El módulo de atención añade únicamente 1\,350 parámetros por rama (menos 
+del 0,01\,\% del total), un coste negligible que se justifica por dos 
+ventajas:
+
+\begin{itemize}
+    \item \textbf{Combinación de información volumétrica:} el modelo puede 
+          integrar evidencia de múltiples cortes, lo que es especialmente 
+          relevante dado que una rotura del LCA es visible típicamente en 
+          3 a 5 cortes consecutivos.
+    
+    \item \textbf{Interpretabilidad:} los pesos de atención $\alpha_s$ 
+          proporcionan un mapa que indica qué cortes el modelo considera 
+          más informativos. Este mapa se utiliza para seleccionar el corte 
+          sobre el que se aplica GradCAM++ (véase el 
+          Capítulo~\ref{chap:resultados}), y constituye en sí mismo una 
+          herramienta de interpretabilidad para el radiólogo.
+\end{itemize}
+
+%==========================================================================
+\section{Fase 1: Detección de anomalías}
+\label{sec:fase1}
+%==========================================================================
+
+La Fase 1 del sistema procesa los tres planos de forma independiente 
+mediante tres redes ResNet-18 con \textit{attention pooling}, y fusiona 
+las predicciones por promedio simple de los logits:
+
+\begin{equation}
+\hat{y}_{anom} = \frac{1}{3}\left(o_{sag} + o_{cor} + o_{axi}\right)
+\end{equation}
+
+donde $o_{sag}$, $o_{cor}$ y $o_{axi}$ son las salidas de las tres ramas 
+tras el \textit{attention pooling}. Se emplea promedio simple (pesos 
+iguales) porque la etiqueta de anomalía es genérica y no se asocia a un 
+plano anatómico específico.
+
+\subsection{Función de pérdida: Focal Loss}
+
+La Fase 1 se entrena con Focal Loss~\cite{lin2017focal}, diseñada para 
+abordar el desbalance de clases mediante la reducción de la contribución 
+de los ejemplos bien clasificados:
+
+\begin{equation}
+\mathcal{L}_{FL} = -\alpha_t (1 - p_t)^\gamma \log(p_t)
+\end{equation}
+
+donde $p_t$ es la probabilidad predicha para la clase correcta, 
+$\alpha = 0{,}25$ controla el peso relativo de las clases y 
+$\gamma = 2{,}0$ reduce la contribución de los ejemplos fáciles. Aunque 
+la etiqueta de anomalía presenta un desbalance inverso al del LCA 
+(80,6\,\% de positivos), Focal Loss resulta efectiva porque reduce el 
+sobreajuste del modelo a los ejemplos fáciles de la clase mayoritaria, 
+forzándolo a aprender las características más sutiles de las rodillas 
+sanas (clase minoritaria).
+
+\subsection{Rol en la interpretabilidad}
+
+Además de su función de clasificación, la Fase 1 cumple un rol importante 
+en la interpretabilidad del sistema. Con un umbral de triaje de 0,30, 
+la Fase 1 alcanza una sensibilidad del 99,0\,\% (véase el 
+Capítulo~\ref{chap:resultados}), lo que permite:
+
+\begin{itemize}
+    \item Informar al radiólogo si la rodilla presenta signos de anomalía 
+          antes de mostrar el análisis específico del LCA, siguiendo el 
+          flujo clínico natural.
+    \item Filtrar con seguridad el 4,4\,\% de los casos más claramente 
+          normales, reduciendo la carga computacional de la Fase 2.
+    \item Proporcionar una capa adicional de confianza en los reportes 
+          clínicos: un caso clasificado como anómalo por la Fase 1 y con 
+          alta probabilidad de lesión del LCA por la Fase 2 transmite 
+          mayor certeza que un caso con señales contradictorias entre 
+          ambas fases.
+\end{itemize}
+
+%==========================================================================
+\section{Fase 2: Clasificación de LCA y menisco}
+\label{sec:fase2}
+%==========================================================================
+
+La Fase 2 constituye el núcleo del sistema de detección de lesiones. Emplea 
+tres redes ResNet-18 independientes (una por plano), cada una con 2 salidas 
+correspondientes a las probabilidades de lesión del LCA y meniscal. Las 
+predicciones de los tres planos se combinan mediante fusión ponderada en 
+espacio de probabilidades.
+
+\subsection{Fusión ponderada por plano}
+\label{subsec:fusion}
+
+A diferencia de enfoques previos que emplean pesos iguales para todos los 
+planos~\cite{azcona2020} o fusionan en espacio de logits, el sistema 
+propuesto realiza la fusión en \textbf{espacio de probabilidades} con 
+\textbf{pesos anatómicamente justificados}:
+
+\begin{equation}
+P_{LCA} = w_{sag} \cdot \sigma(o_{sag}^{LCA}) + w_{cor} \cdot 
+\sigma(o_{cor}^{LCA}) + w_{axi} \cdot \sigma(o_{axi}^{LCA})
+\label{eq:fusion}
+\end{equation}
+
+donde $\sigma$ es la función sigmoide y los pesos se fijan en:
+
+\begin{table}[H]
+\centering
+\caption{Pesos de fusión por plano para cada patología.}
+\label{tab:pesos}
+\rowcolors{2}{white}{udcgray!25}
+\begin{tabular}{lccc}
+\rowcolor{udcpink!25}
+\textbf{Patología} & \textbf{Sagital} & \textbf{Coronal} & 
+\textbf{Axial} \\\hline
+LCA     & 0,55 & 0,35 & 0,10 \\
+Menisco & 0,30 & 0,55 & 0,15 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La asignación de pesos refleja la evidencia radiológica: el plano sagital 
+es la vista principal para la evaluación del LCA, donde el ligamento se 
+visualiza en su totalidad como una estructura bandiforme entre el fémur y 
+la tibia. El plano coronal proporciona información complementaria sobre la 
+inserción tibial del ligamento. El plano axial ofrece una perspectiva 
+transversal de utilidad limitada para el LCA pero relevante para otras 
+estructuras. Para las lesiones meniscales, el plano coronal es el más 
+informativo, ya que los meniscos se visualizan con mayor claridad en esta 
+vista.
+
+Esta estrategia de fusión presenta dos ventajas sobre la fusión en espacio 
+de logits. En primer lugar, la predicción fusionada $P_{LCA}$ es una 
+probabilidad interpretable en el rango $[0, 1]$ que puede ser verificada 
+manualmente por el radiólogo. En segundo lugar, los pesos son transparentes 
+y modificables: un radiólogo con experiencia específica podría ajustar los 
+pesos según su criterio clínico sin necesidad de reentrenar el modelo.
+
+Una optimización exhaustiva de los pesos realizada tras el entrenamiento 
+(véase el Capítulo~\ref{chap:resultados}) confirma que configuraciones con 
+mayor peso sagital alcanzan AUCs superiores (hasta 0,907), validando la 
+decisión de priorizar este plano. No obstante, estos pesos optimizados no 
+se adoptan como configuración del sistema ya que fueron calculados sobre 
+datos de test y su generalización no está garantizada.
+
+\subsection{Función de pérdida: Weighted BCE}
+\label{subsec:wbce}
+
+La Fase 2 se entrena con \textit{Weighted Binary Cross-Entropy} (WBCE), 
+una variante de la entropía cruzada binaria que pondera de forma diferente 
+los falsos positivos y los falsos negativos:
+
+\begin{equation}
+\mathcal{L}_{WBCE} = -\frac{1}{N}\sum_{i=1}^{N} 
+\left[w_i \cdot y_i \log(p_i) + (1-y_i) \log(1-p_i)\right]
+\end{equation}
+
+donde $w_i = \textit{pos\_weight}$ si $y_i = 1$ y $w_i = 1$ en caso 
+contrario. Se emplea $\textit{pos\_weight} = 2{,}0$, lo que significa 
+que el modelo penaliza un falso negativo (lesión no detectada) el doble 
+que un falso positivo (falsa alarma). Esta asimetría refleja directamente 
+la prioridad clínica del sistema.
+
+La elección de $\textit{pos\_weight} = 2{,}0$ es el resultado de un 
+proceso iterativo. Se evaluaron valores de 1,5, 2,0 y 3,5. Con 
+$\textit{pos\_weight} = 3{,}5$ (versión v3) el modelo sobreajustaba en 
+solo 3 épocas, prediciendo siempre positivo para minimizar la pérdida 
+ponderada. Con $\textit{pos\_weight} = 1{,}5$ la sensibilidad resultaba 
+insuficiente. El valor de 2,0 representa el punto de equilibrio entre la 
+penalización de los falsos negativos y la estabilidad del entrenamiento.
+
+Se evaluó también Focal Loss para la Fase 2, pero empíricamente la WBCE 
+produjo mejores resultados. Esto puede explicarse porque la etiqueta del 
+LCA tiene un desbalance moderado (1:4), donde la ponderación directa de 
+la BCE resulta más efectiva que la modulación adaptativa de Focal Loss, 
+diseñada originalmente para desbalances más extremos en detección de 
+objetos~\cite{lin2017focal}.
+
+%==========================================================================
+\section{Regularización}
+\label{sec:regularizacion}
+%==========================================================================
+
+El sobreajuste es un riesgo significativo cuando se entrenan 67 millones de 
+parámetros (seis ResNet-18) con solo 800 ejemplos de entrenamiento por 
+\textit{fold}. Se emplean cuatro estrategias complementarias de 
+regularización:
+
+\subsection{Congelamiento de capas}
+
+En la Fase 2, se congelan los parámetros de las capas \texttt{layer1}, 
+\texttt{layer2} y \texttt{layer3} de cada ResNet-18, entrenando únicamente 
+\texttt{layer4} y la capa de clasificación \texttt{fc}, junto con los 
+módulos de \textit{attention pooling}. Esto reduce los parámetros 
+entrenables de 33,5 millones a 25,2 millones por fase.
+
+Las capas congeladas conservan los pesos de ImageNet, que proporcionan 
+extractores de características de bajo y medio nivel (bordes, texturas, 
+formas) transferibles entre dominios~\cite{yosinski2014}. La capa 
+\texttt{layer4} se entrena para adaptar las características de alto nivel 
+al dominio específico de la RM musculoesquelética.
+
+Se evaluó el descongelamiento de \texttt{layer3} (versión v7), 
+incrementando los parámetros entrenables a 31,5 millones. Sin embargo, esta 
+configuración produjo un AUC inferior (0,816 frente a 0,828) con evidencia 
+de sobreajuste (la pérdida de entrenamiento descendía más rápido sin mejora 
+en la pérdida de validación). Este resultado confirma que con un conjunto de 
+datos de 1\,250 casos, la adaptación de una sola capa de alto nivel es 
+preferible a una adaptación más profunda.
+
+\subsection{Dropout}
+
+Se aplica Dropout~\cite{srivastava2014} con probabilidad 0,5 antes de la 
+capa de clasificación de cada ResNet-18. Esta técnica, introducida a partir 
+de la versión v4, desactiva aleatoriamente el 50\,\% de las neuronas 
+durante el entrenamiento, forzando al modelo a aprender representaciones 
+redundantes.
+
+La introducción de Dropout fue motivada por la observación de que las 
+versiones v2 y v3 alcanzaban una pérdida de entrenamiento cercana a cero 
+(100\,\% de precisión en entrenamiento) mientras que la pérdida de 
+validación se estancaba, un patrón clásico de sobreajuste.
+
+\subsection{Aumento de datos}
+
+Como se describió en el Capítulo~\ref{chap:preparacion}, el aumento de 
+datos aplicado durante el entrenamiento incluye rotaciones aleatorias 
+($\pm 8^\circ$), zoom ($\pm 10\,\%$), ajuste de brillo, ruido gaussiano, 
+desenfoque gaussiano y corrección gamma. El estudio de ablación presentado 
+en la Sección~\ref{sec:ablacion_aug} demuestra que el aumento de datos 
+mejora la especificidad en 18 puntos porcentuales, confirmando su papel 
+como regularizador.
+
+\subsection{Parada temprana y planificador de tasa de aprendizaje}
+
+El entrenamiento se detiene automáticamente cuando la pérdida de validación 
+no mejora durante 7 épocas consecutivas (\textit{patience} = 7), 
+restaurando los pesos de la época con mejor pérdida de validación. Además, 
+se emplea un planificador \texttt{ReduceLROnPlateau} que reduce la tasa de 
+aprendizaje a la mitad cuando la pérdida de validación se estanca durante 
+3 épocas consecutivas:
+
+\begin{equation}
+\text{LR}_{nuevo} = \text{LR}_{actual} \times 0{,}5 \quad 
+\text{si } \Delta \mathcal{L}_{val} < 0 \text{ durante 3 épocas}
+\end{equation}
+
+Este esquema, que reemplazó al planificador \textit{CosineAnnealing} 
+empleado en la versión v2, permite que el modelo continúe aprendiendo a un 
+ritmo más lento cuando se aproxima a un mínimo local, en lugar de forzar 
+una reducción predeterminada de la tasa de aprendizaje.
+
+En la práctica, el entrenamiento se detiene típicamente entre las épocas 
+9 y 16, con una tasa de aprendizaje que desciende de $10^{-4}$ a 
+$2{,}5 \times 10^{-5}$.
+
+%==========================================================================
+\section{Optimización del umbral de decisión}
+\label{sec:umbral}
+%==========================================================================
+
+La conversión de una probabilidad continua $P_{LCA} \in [0, 1]$ en una 
+decisión binaria (LCA+ o LCA$-$) requiere la selección de un umbral 
+$\tau$ tal que:
+
+\begin{equation}
+\hat{y} = \begin{cases}
+\text{LCA+} & \text{si } P_{LCA} \geq \tau \\
+\text{LCA-} & \text{si } P_{LCA} < \tau
+\end{cases}
+\end{equation}
+
+La elección del umbral tiene un impacto directo en el balance entre 
+sensibilidad y especificidad, y constituye una de las decisiones más 
+relevantes del sistema desde el punto de vista clínico.
+
+\subsection{Estrategias de selección}
+
+Se calculan tres umbrales y se reportan todos, seleccionando el clínico:
+
+\begin{itemize}
+    \item \textbf{F1-optimal:} maximiza el F1-score sobre el conjunto de 
+          validación. Tiende a producir umbrales altos 
+          ($\sim 0{,}5$--$0{,}6$) que priorizan la precisión sobre la 
+          sensibilidad.
+    
+    \item \textbf{Youden:} maximiza el índice de Youden 
+          ($J = \text{Sens} + \text{Spec} - 1$), que representa el punto de 
+          la curva ROC más distante de la diagonal. Proporciona un balance 
+          estadístico entre sensibilidad y especificidad.
+    
+    \item \textbf{Clínico:} maximiza la especificidad sujeto a la 
+          restricción $\text{Sensibilidad} \geq 85\,\%$. Este es el umbral 
+          seleccionado para el sistema, y se calcula sobre el 
+          \textbf{conjunto de validación} (no sobre entrenamiento) para 
+          evitar estimaciones sobreconfiadas.
+\end{itemize}
+
+La selección del umbral clínico desde el conjunto de validación es una 
+decisión de diseño adoptada a partir de la versión v3 del sistema. En las 
+versiones v1 y v2, el umbral se calculaba sobre el conjunto de 
+entrenamiento, donde las probabilidades predichas están más separadas y el 
+modelo es más confiado. Esto producía umbrales que no generalizaban bien al 
+conjunto de test: un umbral de 0,5 seleccionado en entrenamiento resultaba 
+en una sensibilidad de solo 42,8\,\% en test.
+
+\subsection{Justificación clínica}
+
+La priorización de la sensibilidad sobre la especificidad responde a la 
+asimetría de las consecuencias de cada tipo de error en el contexto clínico:
+
+\begin{itemize}
+    \item Un \textbf{falso negativo} (lesión del LCA no detectada) puede 
+          resultar en la ausencia de tratamiento, deterioro articular 
+          progresivo, inestabilidad crónica de la rodilla y, en casos 
+          severos, intervenciones quirúrgicas más complejas.
+    
+    \item Un \textbf{falso positivo} (sospecha de lesión del LCA no 
+          confirmada) resulta en una derivación a revisión por parte del 
+          radiólogo y, potencialmente, pruebas complementarias. El coste es 
+          significativamente menor que el de un falso negativo.
+\end{itemize}
+
+Esta asimetría determina que el umbral clínico (sensibilidad 
+$\geq$ 85\,\%) sea la opción adecuada para un sistema de asistencia al 
+diagnóstico, a pesar de producir una especificidad inferior a la que se 
+obtendría con el umbral F1-optimal.
+
+%==========================================================================
+\section{Procedimiento de entrenamiento}
+\label{sec:entrenamiento}
+%==========================================================================
+
+\subsection{Validación cruzada estratificada}
+
+El sistema se evalúa mediante validación cruzada estratificada de 5 
+\textit{folds}~\cite{kohavi1995}, donde la estratificación se realiza 
+sobre la etiqueta del LCA para garantizar una distribución similar de 
+positivos y negativos en cada \textit{fold}. Los 1\,250 casos se dividen 
+en cada \textit{fold} de la siguiente manera:
+
+\begin{itemize}
+    \item \textbf{Entrenamiento:} 800 casos (64\,\%)
+    \item \textbf{Validación:} 200 casos (16\,\%), seleccionados 
+          estratificadamente del conjunto de entrenamiento
+    \item \textbf{Test:} 250 casos (20\,\%)
+\end{itemize}
+
+El conjunto de validación se utiliza para la parada temprana, la selección 
+del umbral clínico y el planificador de la tasa de aprendizaje. El 
+conjunto de test se emplea exclusivamente para la evaluación final y no 
+influye en ninguna decisión de entrenamiento.
+
+\subsection{Entrenamiento secuencial de fases}
+
+Las dos fases se entrenan de forma secuencial. Primero se entrena la 
+Fase 1 hasta convergencia (típicamente 9--13 épocas). A continuación, se 
+congelan los parámetros de la Fase 1 y se entrenan los modelos de la 
+Fase 2 (típicamente 9--19 épocas). Este esquema secuencial evita la 
+interferencia entre los objetivos de las dos fases y simplifica el 
+proceso de entrenamiento.
+
+\subsection{Hiperparámetros}
+
+La Tabla~\ref{tab:hiperparametros} resume los hiperparámetros del sistema 
+en su configuración final.
+
+\begin{table}[H]
+\centering
+\caption{Hiperparámetros del sistema CASCADE.}
+\label{tab:hiperparametros}
+\rowcolors{2}{white}{udcgray!25}
+\begin{tabular}{llr}
+\rowcolor{udcpink!25}
+\textbf{Componente} & \textbf{Parámetro} & \textbf{Valor} \\\hline
+\textit{Backbone}  & Arquitectura              & ResNet-18 \\
+               & Parámetros totales        & 67,0M (6 modelos) \\
+               & Parámetros entrenables    & 25,2M (Fase 2) \\
+Entrada        & Resolución                & 224$\times$224 \\
+               & Cortes por volumen        & 32 \\
+               & Canales                   & 1 (escala de grises) \\
+Entrenamiento  & Optimizador               & Adam~\cite{kingma2015} \\
+               & Tasa de aprendizaje       & $10^{-4}$ \\
+               & Tamaño de lote            & 2 \\
+               & Épocas máximas            & 25 \\
+Regularización & Dropout                   & 0,5 \\
+               & Paciencia (parada)        & 7 épocas \\
+               & Paciencia (LR)            & 3 épocas \\
+               & Decaimiento de pesos      & $10^{-4}$ \\
+Pérdida Fase 1 & Tipo                      & Focal Loss \\
+               & $\alpha$                  & 0,25 \\
+               & $\gamma$                  & 2,0 \\
+Pérdida Fase 2 & Tipo                      & WeightedBCE \\
+               & \textit{pos\_weight}      & 2,0 \\
+Umbral         & Criterio                  & Sens $\geq$ 85\,\% \\
+               & Fuente                    & Validación \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Reproducibilidad}
+
+Para facilitar la reproducibilidad de los resultados, se fija la semilla 
+aleatoria a 42 para la generación de los \textit{folds} de validación 
+cruzada y la inicialización de los pesos. No obstante, la naturaleza 
+estocástica de las operaciones en GPU introduce una variabilidad residual 
+entre ejecuciones con la misma configuración. Para cuantificar esta 
+variabilidad, se realizan múltiples ejecuciones con configuración idéntica, 
+observándose una desviación estándar del AUC entre ejecuciones del orden de 
+$\pm 0{,}01$ (véase el Capítulo~\ref{chap:resultados}).

@@ -1,0 +1,320 @@
+\chapter{Estado del arte}
+\label{chap:estado_arte}
+
+\lettrine{E}{n} este capítulo se revisan los principales trabajos y técnicas que 
+conforman el contexto científico del proyecto. Se aborda, en primer lugar, el 
+papel del aprendizaje profundo en el análisis de imagen médica. A continuación, 
+se describen los enfoques específicos aplicados a la detección de lesiones de 
+rodilla en resonancia magnética. Por último, se presentan las técnicas de
+preprocesamiento e interpretabilidad empleadas en trabajos previos sobre
+detección de lesiones de rodilla en resonancia magnética.
+
+%==========================================================================
+\section{Aprendizaje profundo en imagen médica}
+\label{sec:dl_imagen_medica}
+%==========================================================================
+
+Las redes neuronales convolucionales (\textit{Convolutional Neural Networks}, CNN) han transformado el campo del análisis 
+de imagen médica en la última década. El trabajo de Esteva et al.~\cite{esteva2017} en clasificación de lesiones
+cutáneas, donde los autores reportaron métricas de rendimiento comparables a
+las de dermatólogos certificados en un estudio experimental controlado, y los
+sistemas de detección de retinopatía diabética son ejemplos representativos de
+cómo el aprendizaje profundo ha alcanzado capacidades diagnósticas equiparables
+a las del experto humano en tareas bien definidas.
+
+El éxito de estas arquitecturas se sustenta en tres factores: la capacidad de las 
+CNN para aprender representaciones jerárquicas de características directamente de 
+los datos, sin necesidad de diseñar manualmente extractores de características; 
+la disponibilidad de grandes conjuntos de datos etiquetados; y el aumento de la 
+capacidad computacional mediante GPUs.
+
+En el ámbito específico de la resonancia magnética musculoesquelética, las CNN 
+enfrentan desafíos particulares que las distinguen de otras aplicaciones de 
+imagen médica:
+
+\begin{itemize}
+    \item \textbf{Naturaleza volumétrica:} cada estudio de RM consta de un volumen 
+          tridimensional compuesto por un número variable de cortes bidimensionales, lo que requiere estrategias específicas para agregar 
+          la información a lo largo de la dimensión axial del volumen.
+    
+    \item \textbf{Bajo contraste del tejido blando:} a diferencia de la radiografía
+          convencional, donde el hueso presenta un contraste elevado, las
+          estructuras ligamentosas y meniscales en RM presentan diferencias de
+          intensidad sutiles que pueden dificultar su identificación tanto por el
+          modelo como por el profesional~\cite{chea2020}.
+    
+    \item \textbf{Múltiples planos de adquisición:} los protocolos estándar de RM 
+          de rodilla incluyen adquisiciones en los planos sagital, coronal y 
+          axial, cada uno con información complementaria sobre las estructuras 
+          anatómicas.
+    
+    \item \textbf{Necesidad de interpretabilidad:} en el contexto clínico, el 
+          radiólogo debe poder justificar sus decisiones diagnósticas. Un modelo 
+          que proporcione únicamente una probabilidad sin explicación visual 
+          resulta de limitada utilidad práctica~\cite{singh2020}.
+\end{itemize}
+
+Estas particularidades motivan el diseño de arquitecturas y flujos de 
+preprocesamiento específicos para RM musculoesquelética.
+
+%==========================================================================
+\section{El conjunto de datos MRNet}
+\label{sec:mrnet}
+%==========================================================================
+
+MRNet, publicado por Bien et al. en 2018~\cite{bien2018} y recopilado en el
+Stanford University Medical Center, se ha consolidado como el banco de pruebas
+de referencia para la detección automatizada de lesiones de rodilla en
+resonancia magnética. Una revisión sistemática reciente~\cite{siouras2022}
+identificó 23 trabajos en este ámbito, de los cuales la mayoría lo emplea como
+estándar de comparación. Su relevancia reside en la combinación de tres factores
+poco habituales de forma simultánea en un conjunto público: la disponibilidad de
+los tres planos de adquisición estándar (sagital, coronal y axial) para cada
+examen, la presencia de etiquetas para múltiples patologías (anomalía general,
+lesión del LCA y lesión meniscal), y un tamaño suficiente para el entrenamiento
+de redes profundas mediante aprendizaje por transferencia.
+
+La Figura~\ref{fig:mrnet_planos} muestra ejemplos representativos de cortes en
+cada plano de adquisición, ilustrando las diferencias de perspectiva anatómica
+y contraste entre vistas.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{imaxes/eda_muestras.png}
+\caption{Ejemplos representativos del conjunto de datos MRNet en los tres
+planos de adquisición. Fila superior: caso con lesión del LCA. Fila inferior:
+caso sin lesión. De izquierda a derecha: plano sagital, coronal y axial.}
+\label{fig:mrnet_planos}
+\end{figure}
+
+El análisis detallado de la distribución de etiquetas, el desbalance de clases
+y las características volumétricas del conjunto se presenta en el
+Capítulo~\ref{chap:preparacion}, donde se discuten sus implicaciones sobre el
+diseño del sistema. Los trabajos que han empleado MRNet como banco de pruebas
+se revisan en la sección siguiente; los enfoques basados en otros conjuntos de
+datos se describen en la Sección~\ref{subsec:otros_datasets}.
+
+%==========================================================================
+\section{Trabajos previos en detección de lesiones del LCA}
+\label{sec:trabajos_previos}
+%==========================================================================
+A continuación se revisan los principales enfoques propuestos en la literatura 
+para la detección automática de lesiones del LCA en resonancia magnética.
+
+\subsection{MRNet original (Bien et al., 2018)}
+\label{subsec:mrnet_original}
+
+El trabajo original de Bien et al.~\cite{bien2018} propone una arquitectura 
+basada en AlexNet~\cite{krizhevsky2012} preentrenada en 
+ImageNet~\cite{deng2009}, donde cada plano se procesa de forma independiente. 
+Para cada volumen, los cortes se pasan individualmente por la CNN y la predicción 
+a nivel de volumen se obtiene mediante \textit{max pooling} sobre las 
+activaciones de los cortes. La predicción final para cada patología se calcula 
+mediante regresión logística sobre las salidas de los tres modelos por plano.
+
+Los autores reportan un AUC de 0,937 para anomalías, 0,965 para LCA y 0,847 
+para menisco. Sin embargo, estos resultados presentan limitaciones metodológicas: 
+se obtuvieron sobre una partición fija de validación (120 casos) sin validación 
+cruzada, y el conjunto de test no se ha hecho público, lo que dificulta la 
+comparación directa con trabajos posteriores. 
+
+El enfoque de \textit{max pooling} sobre cortes, aunque eficiente, presenta una
+limitación conceptual relevante: al seleccionar únicamente el corte con mayor
+activación, se descarta la información contextual de los cortes adyacentes, que
+pueden contener evidencia complementaria sobre la extensión de la lesión.
+
+\subsection{Redes residuales y aprendizaje por transferencia}
+\label{subsec:resnet}
+
+Las redes residuales (\textit{Residual Networks}, ResNet), propuestas por
+He et al.~\cite{he2016}, introdujeron conexiones directas (\textit{skip
+connections}) entre capas no contiguas que permiten el entrenamiento estable
+de redes de gran profundidad. A diferencia de las arquitecturas convolucionales
+clásicas, en las que el gradiente tiende a desvanecerse al retropropagarse por
+muchas capas, las conexiones residuales lo propagan directamente a capas
+anteriores, haciendo posible el entrenamiento de arquitecturas de 18, 50 o 101
+capas con resultados competitivos en tareas de reconocimiento visual.
+
+En el contexto del análisis de imagen médica, las ResNet preentrenadas en
+ImageNet~\cite{deng2009} han demostrado ser transferibles a dominios visuales
+distintos del fotográfico. Yosinski et al.~\cite{yosinski2014} mostraron que
+las capas iniciales de una red convolucional aprenden detectores de
+características genéricos (bordes, texturas, patrones de color) aplicables a
+dominios muy diferentes del de entrenamiento, mientras que las capas más
+profundas aprenden representaciones específicas de la tarea concreta.
+Litjens et al.~\cite{litjens2017} confirmaron, en una revisión sistemática
+sobre aprendizaje profundo en imagen médica, que el aprendizaje por
+transferencia desde ImageNet proporciona una inicialización efectiva incluso
+con conjuntos de datos reducidos, y que ResNet constituye una de las
+arquitecturas más empleadas en este dominio.
+
+\subsection{Enfoques comparativos sobre MRNet}
+\label{subsec:comparativos}
+
+Trabajos posteriores han abordado la clasificación de lesiones de rodilla desde 
+distintas perspectivas. Azcona et al.~\cite{azcona2020} realizaron un estudio 
+comparativo de técnicas de aprendizaje profundo sobre MRNet, evaluando el 
+rendimiento de aprendizaje por transferencia con diversas arquitecturas (ResNet, 
+VGG~\cite{simonyan2015} y AlexNet) tanto entrenadas desde cero como preentrenadas 
+en ImageNet. Sus resultados, con un AUC de 0,934 para la detección de anomalías, 
+confirman que el aprendizaje por transferencia desde ImageNet es efectivo incluso 
+cuando el dominio de origen difiere sustancialmente del de destino. Su principal 
+limitación es la asignación de pesos iguales a todos los planos en la fusión, 
+ignorando la evidencia radiológica que indica que el plano sagital es más 
+informativo para la evaluación del LCA.
+
+Por su parte, Panteli et al.~\cite{mdpi2021mrnet} propusieron un enfoque 
+progresivo sobre MRNet, demostrando que la aplicación secuencial de técnicas de 
+preprocesamiento y aumento de datos mejora de forma incremental el 
+rendimiento de los modelos.
+
+\subsection{Arquitecturas avanzadas}
+\label{subsec:avanzadas}
+
+Trabajos más recientes han explorado arquitecturas de mayor complejidad,
+incorporando mecanismos de atención visual para ponderar las regiones más
+relevantes de cada corte, extracción de características multi-escala y fusión de
+características a nivel intermedio (\textit{feature-level fusion}) en vez de a
+nivel de decisión. Algunos de estos enfoques reportan AUCs superiores a 0,95
+para la detección de lesiones del LCA. Sin embargo, el incremento en la
+complejidad estructural conlleva un coste computacional significativamente mayor
+y, con frecuencia, una reducción en la interpretabilidad del modelo, lo que
+puede limitar su adopción en entornos clínicos~\cite{chea2020}.
+
+\subsection{Enfoques sobre otros conjuntos de datos}
+\label{subsec:otros_datasets}
+
+Aunque MRNet es el banco de pruebas dominante, una parte de la literatura ha
+abordado la detección de lesiones de rodilla sobre conjuntos institucionales
+propios. Wang et al.~\cite{wang2025} desarrollaron un sistema que combina
+detección de objetos mediante YOLOv9 y redes convolucionales sobre un conjunto
+de 253 pacientes con RM sagital, alcanzando resultados competitivos mediante un
+enfoque de detección y clasificación en dos etapas. La revisión
+sistemática~\cite{siouras2022} documenta otros trabajos con datos propietarios
+que, aunque menos comparables entre sí por la heterogeneidad de protocolos y
+criterios de etiquetado, evidencian que el problema no se circunscribe a un
+único centro ni a un único protocolo de adquisición.
+
+La dependencia de la comunidad en MRNet como estándar de facto facilita la
+comparación directa entre métodos, pero plantea dudas sobre la capacidad de
+generalización de los modelos a otros centros hospitalarios con equipos y
+secuencias distintos, cuestión que permanece en gran medida abierta en la
+literatura~\cite{chea2020}.
+
+%==========================================================================
+\section{Técnicas de preprocesamiento en MRI}
+\label{sec:preprocesamiento_arte}
+%==========================================================================
+
+El preprocesamiento de imágenes de resonancia magnética desempeña un papel 
+fundamental en el rendimiento de los sistemas de clasificación basados en 
+aprendizaje profundo~\cite{litjens2017}. A diferencia de la fotografía natural, 
+donde los modelos preentrenados en ImageNet pueden aplicarse con modificaciones 
+mínimas, las imágenes de RM presentan artefactos y características específicas 
+que requieren tratamiento previo.
+
+\subsection{CLAHE: realce de contraste adaptativo}
+\label{subsec:clahe}
+
+CLAHE (\textit{Contrast Limited Adaptive Histogram Equalization}), propuesta
+por Pizer et al.~\cite{pizer1987}, es una técnica de realce de contraste que
+opera de forma local sobre regiones de la imagen. A diferencia de la
+ecualización global del histograma, evita la saturación de zonas de alto
+contraste adaptándose a las variaciones de intensidad locales.
+
+Esta técnica resulta particularmente relevante para imagen de RM
+musculoesquelética, donde las estructuras ligamentosas y meniscales presentan
+un contraste bajo respecto al hueso cortical y al líquido sinovial
+circundante. Su eficacia como etapa de preprocesamiento previa al entrenamiento
+de redes convolucionales en imagen médica ha sido documentada en la
+literatura~\cite{litjens2017}.
+
+\subsection{Otras técnicas de normalización}
+\label{subsec:otras_normalizacion}
+
+Además de CLAHE, la literatura recoge diversas técnicas de normalización de
+intensidad aplicadas a imagen de RM, entre las que destacan la corrección del
+campo de sesgo, la normalización Z-score y la igualación de histogramas entre
+sujetos~\cite{litjens2017}. La elección entre ellas depende del objetivo
+concreto: algunas están orientadas a reducir la variabilidad entre centros,
+mientras que otras actúan como regularizadores implícitos durante el
+entrenamiento.
+
+%==========================================================================
+\section{Mecanismos de agregación sobre cortes}
+\label{sec:agregacion_cortes}
+%==========================================================================
+
+Un desafío fundamental en el procesamiento de volúmenes de RM con redes 2D es 
+la agregación de las predicciones individuales de cada corte en una predicción 
+a nivel de volumen.
+
+\subsection{Max pooling}
+\label{subsec:max_pooling}
+
+El enfoque más simple y ampliamente utilizado, adoptado en el MRNet 
+original~\cite{bien2018}, consiste en procesar cada corte de forma independiente 
+y seleccionar la activación máxima:
+
+\begin{equation}
+\mathbf{o} = \max_{s=1}^{S} f_\theta(\mathbf{x}_s)
+\end{equation}
+
+donde $f_\theta$ es la red convolucional, $\mathbf{x}_s$ es el corte $s$-ésimo y $S$ es el 
+número total de cortes. Esta estrategia tiene la ventaja de su simplicidad computacional, pero presenta una limitación conceptual importante descrita en la literatura: toda la predicción del volumen depende de un único corte. Como consecuencia, los cortes adyacentes, que pueden contener información complementaria sobre la extensión y naturaleza de la lesión, quedan completamente ignorados.
+
+\subsection{Attention pooling}
+\label{subsec:attention_pooling}
+
+Los mecanismos de atención permiten que el modelo aprenda a asignar un peso a 
+cada corte en función de su relevancia para la tarea de clasificación. En lugar 
+de seleccionar un único corte ganador, la predicción se calcula como la media 
+ponderada de las activaciones de todos los cortes:
+
+\begin{equation}
+\alpha_s = \frac{\exp(g(\mathbf{h}_s))}{\sum_{j=1}^{S} \exp(g(\mathbf{h}_j))}, 
+\quad \mathbf{o} = \sum_{s=1}^{S} \alpha_s \cdot \mathbf{h}_s
+\end{equation}
+
+donde $\mathbf{h}_s = f_\theta(\mathbf{x}_s)$ son las características extraídas del corte $s$, $g$ es una red de atención (típicamente un perceptrón multicapa pequeño) y $\alpha_s$ son los pesos de atención normalizados mediante la función softmax.
+
+Ilse et al.~\cite{ilse2018}, que formalizan este mecanismo en el contexto del aprendizaje de múltiple instancia, señalan dos ventajas principales respecto al \textit{max pooling}. En primer lugar, la agregación ponderada permite combinar información de múltiples cortes, capturando la extensión espacial de la lesión en lugar de depender de un único corte. En segundo lugar, los pesos de atención $\alpha_s$ constituyen en sí mismos un mapa de interpretabilidad que indica qué cortes el modelo considera más informativos para su predicción.
+
+%==========================================================================
+\section{Técnicas de interpretabilidad}
+\label{sec:interpretabilidad_arte}
+%==========================================================================
+
+La interpretabilidad de los modelos de aprendizaje profundo es un requisito fundamental para su adopción clínica~\cite{singh2020}. Un modelo que proporcione únicamente una probabilidad de lesión sin indicar las regiones o los cortes que fundamentan esa predicción resulta de limitada utilidad en entornos médicos, donde el profesional necesita validar la sugerencia del sistema con su propio criterio diagnóstico.
+
+\subsection{GradCAM}
+\label{subsec:gradcam}
+
+\textit{Gradient-weighted Class Activation Mapping} (GradCAM), propuesto por
+Selvaraju et al.~\cite{selvaraju2017}, genera mapas de calor que indican las
+regiones de la imagen que más contribuyen a la predicción del modelo para una
+clase determinada. El método pondera los mapas de activación de la última capa
+convolucional mediante los gradientes de la predicción respecto a dichas
+activaciones, produciendo una localización visual de las regiones relevantes.
+
+\subsection{GradCAM++}
+\label{subsec:gradcampp}
+
+GradCAM++, propuesto por Chattopadhay et al.~\cite{chattopadhay2018}, extiende
+GradCAM mediante una ponderación posición-dependiente de los gradientes que
+permite localizaciones más precisas, especialmente cuando múltiples instancias
+de la misma clase aparecen en la imagen o cuando las lesiones ocupan una
+fracción pequeña de esta.
+
+\subsection{Interpretabilidad en el contexto volumétrico}
+\label{subsec:interp_volumetrica}
+
+La aplicación de métodos basados en mapas de activación (como GradCAM o GradCAM++) en el contexto específico de volúmenes de RM plantea un desafío metodológico: la elección del corte sobre el cual aplicar la visualización. La práctica habitual en los trabajos que emplean redes 2D, incluyendo el diseño original de Bien et al.~\cite{bien2018}, ha consistido en visualizar el corte geométricamente central del volumen bajo la asunción de que representa el núcleo de la estructura anatómica. Singh et al.~\cite{singh2020} advierten, en su revisión sobre interpretabilidad en aprendizaje profundo médico, que la selección ad hoc del corte de visualización puede comprometer la fidelidad de la explicación generada, ya que el corte efectivamente utilizado por el modelo en su predicción puede no coincidir con el elegido por convención.
+
+%==========================================================================
+\section{Posicionamiento del presente trabajo}
+\label{sec:posicionamiento}
+%==========================================================================
+Este trabajo se sitúa en la intersección de las líneas de investigación descritas, identificando cuatro limitaciones recurrentes en la literatura que orientan las decisiones de diseño del sistema propuesto.
+
+En primer lugar, los trabajos revisados adoptan mayoritariamente fusiones con pesos uniformes entre planos~\cite{azcona2020}, sin reflejar la distinta relevancia diagnóstica de cada vista para patologías específicas. En segundo lugar, el empleo generalizado de \textit{max pooling} para la agregación de cortes~\cite{bien2018} descarta la información contextual de los cortes adyacentes, limitando la capacidad del modelo para capturar la continuidad espacial de la lesión. En tercer lugar, la evaluación sobre particiones fijas de tamaño reducido~\cite{bien2018,azcona2020} limita la robustez estadística de las métricas reportadas. Por último, la interpretabilidad de las predicciones ha recibido una atención limitada en los sistemas existentes~\cite{singh2020}, lo que dificulta la validación clínica de las salidas del modelo. El sistema propuesto aborda cada una de estas brechas; las decisiones de diseño concretas se describen en el Capítulo~\ref{chap:cascade}.

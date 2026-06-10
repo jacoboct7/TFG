@@ -1,0 +1,297 @@
+\chapter{Introducción}
+\label{chap:introduccion}
+
+\lettrine{L}{a} resonancia magnética (RM) se ha consolidado como la herramienta de 
+referencia en el diagnóstico de lesiones musculoesqueléticas, especialmente en 
+articulaciones complejas como la rodilla. Su capacidad para diferenciar tejidos 
+blandos sin radiación ionizante la convierte en el estándar clínico para detectar 
+lesiones del ligamento cruzado anterior (LCA), rupturas meniscales y otras 
+patologías estructurales. Las lesiones del LCA presentan una incidencia 
+significativa en la población general, con estudios epidemiológicos que reportan 
+tasas de reconstrucción crecientes en las últimas 
+décadas~\cite{sanders2016}, y una prevalencia especialmente elevada en 
+deportistas jóvenes que practican deportes de contacto o de cambios de dirección.
+
+A pesar de su utilidad diagnóstica, la interpretación de estudios de RM depende 
+críticamente de la experiencia del personal de radiología y está sujeta a variabilidad inter e 
+intraobservador. Revisiones sistemáticas reportan una sensibilidad del 
+87\,\% y una especificidad del 93\,\% para la detección de lesiones del LCA 
+mediante RM~\cite{phelan2016}, lo que implica que aproximadamente un 13\,\% de 
+las lesiones no son detectadas. Otros trabajos documentan tasas de concordancia 
+entre radiólogos que oscilan entre el 75\,\% y el 
+95\,\%~\cite{crawford2007}, evidenciando que incluso especialistas experimentados 
+pueden llegar a conclusiones diferentes ante las mismas imágenes. A esta 
+variabilidad contribuye el desgaste cognitivo acumulado durante la jornada 
+laboral: un mismo profesional puede modificar su criterio diagnóstico sobre una 
+misma imagen en función del momento del día y la carga de trabajo acumulada. Una 
+herramienta de asistencia automatizada permite reducir esta fatiga al ofrecer una 
+segunda lectura objetiva y constante, mejorando no solo la detección directa sino 
+también el rendimiento del propio profesional al final de su jornada.
+
+El aprendizaje profundo ha demostrado en los últimos años un rendimiento 
+comparable o superior al de especialistas humanos en múltiples tareas de 
+diagnóstico por imagen~\cite{esteva2017,litjens2017}. En el ámbito de la 
+resonancia magnética de rodilla, Bien et al.~\cite{bien2018} introdujeron en 
+2018 el conjunto de datos MRNet junto con una arquitectura basada en 
+AlexNet~\cite{krizhevsky2012}, preentrenada en ImageNet~\cite{deng2009}, capaz 
+de detectar anomalías generales, lesiones del LCA y desgarros meniscales con un 
+AUC de 0,937, 0,965 y 0,847 respectivamente. Trabajos posteriores como los de 
+Azcona et al.~\cite{azcona2020} y Panteli et al.~\cite{mdpi2021mrnet} han 
+explorado arquitecturas más complejas y enfoques progresivos sobre el mismo 
+conjunto de datos. Sin embargo, la mayoría de estos sistemas comparten dos 
+limitaciones: han sido evaluados sobre particiones fijas de 120 
+casos~\cite{kohavi1995}, y la interpretabilidad de las predicciones ha recibido 
+una atención limitada~\cite{singh2020}.
+
+\section{Motivación personal}
+\label{subsec:motivacion}
+
+El interés por desarrollar este proyecto no nace de una simple inquietud 
+académica, sino de una experiencia personal vivida en primera persona. Durante 
+la práctica deportiva sufrí una lesión grave de rodilla. La primera resonancia 
+magnética dio pie a un informe clínico confuso: se diagnosticó una rotura 
+completa del ligamento cruzado anterior, combinada con esguinces colaterales y 
+contusiones en el menisco externo. Con la incertidumbre de un diagnóstico tan 
+severo, decidí consultar a otros especialistas; tras revisar las mismas 
+imágenes, concluyeron que la rotura del LCA era solo parcial, lo que cambiaba 
+por completo el enfoque de mi recuperación. La sorpresa real llegó siete meses 
+después: al repetir la RM para evaluar la evolución, descubrí que también tenía 
+el menisco externo roto y que esa lesión había pasado totalmente desapercibida 
+en el análisis inicial.
+
+Vivir este proceso me hizo ver con claridad las limitaciones reales a las que se 
+enfrenta el diagnóstico por imagen tradicional. Comprobé cómo un error o una 
+omisión en la lectura de una resonancia impacta de forma directa en la salud, 
+la psicología y los tiempos de recuperación de la persona afectada. Esta 
+vivencia despertó mi motivación por investigar cómo los modelos computacionales 
+pueden aportar objetividad y reproducibilidad al entorno clínico.
+
+%==========================================================================
+\section{Objetivos}
+\label{sec:objetivos}
+%==========================================================================
+
+%\subsection{Objetivo general}
+%label{subsec:objetivo_general}
+
+Diseñar, implementar y evaluar un sistema de aprendizaje profundo multiplano 
+capaz de procesar volúmenes de resonancia magnética de rodilla para la detección 
+de lesiones del ligamento cruzado anterior, proporcionando predicciones 
+interpretables y priorizando la detección de lesiones reales mediante la 
+optimización del umbral de decisión para sensibilidad.
+Para alcanzar este objetivo general, se plantean los siguientes objetivos específicos:
+%\subsection{Objetivos específicos}
+%\label{subsec:objetivos_especificos}
+
+
+\begin{enumerate}
+    \item Analizar las características del conjunto de datos empleado y 
+          estudiar sus implicaciones sobre el desarrollo del sistema.
+    
+    \item Diseñar e implementar un sistema basado en aprendizaje profundo 
+          para la detección automática de lesiones de rodilla mediante 
+          resonancia magnética.
+    
+    \item Estudiar el impacto de distintas estrategias de preprocesamiento 
+          y diseño arquitectónico sobre el rendimiento del sistema.
+    
+    \item Evaluar experimentalmente el sistema desarrollado utilizando 
+          métricas adecuadas al problema planteado y una estrategia de 
+          evaluación robusta.
+    
+    \item Analizar mecanismos que permitan mejorar la interpretabilidad de 
+          las predicciones generadas por el modelo.
+\end{enumerate}
+
+%==========================================================================
+\section{Alcance}
+\label{subsec:alcance}
+%==========================================================================
+El proyecto se centra en la detección de lesiones del LCA, sin abordar la
+segmentación de estructuras anatómicas ni la clasificación de la gravedad de
+la lesión (parcial frente a completa). Se utiliza exclusivamente el conjunto
+de datos público MRNet~\cite{bien2018}, sin incluir datos de otros centros
+hospitalarios ni protocolos de adquisición diferentes. El sistema se plantea
+como herramienta de apoyo al proceso diagnóstico, no como sustitución del
+criterio clínico. El trabajo incorpora aspectos relacionados con la
+interpretabilidad del modelo además del análisis de su rendimiento predictivo.
+
+Aunque el conjunto de datos MRNet proporciona etiquetas también para
+desgarros meniscales, y el sistema incorpora la predicción de esta patología
+como salida secundaria de la Fase 2, la evaluación cuantitativa sistemática
+mediante validación cruzada se circunscribe a la detección del LCA, en
+consonancia con el objetivo principal del trabajo. La predicción meniscal se
+ilustra cualitativamente en el caso clínico personal del
+Capítulo~\ref{chap:resultados}, pero no se reportan métricas de validación
+cruzada para esta tarea.
+
+%==========================================================================
+\section{Planificación y costes}
+\label{sec:planificacion}
+%==========================================================================
+A continuación se presenta la planificación temporal del proyecto y una 
+estimación de los costes asociados.
+
+\subsection{Fases del proyecto}
+\label{subsec:fases}
+
+
+El desarrollo del proyecto se estructura en cinco fases, solapadas en el 
+tiempo según la naturaleza iterativa del trabajo. Su distribución temporal 
+se muestra en la Figura~\ref{fig:gantt}:
+
+\begin{enumerate}
+    \item \textbf{Definición y exploración inicial} (noviembre--diciembre 
+          2025): formulación de la propuesta de proyecto, revisión 
+          bibliográfica, búsqueda de un conjunto de datos y análisis del 
+          mismo, incluyendo las primeras pruebas de concepto con un modelo 
+          de clasificación.
+    
+    \item \textbf{Desarrollo del sistema} (diciembre 2025--marzo 2026): 
+          diseño e implementación de un modelo de aprendizaje profundo, 
+          evaluando qué configuración es la más adecuada para resolver el 
+          problema.
+    
+    \item \textbf{Interpretabilidad y análisis cualitativo} (febrero--mayo 
+          2026): integración de técnicas de explicabilidad visual para la 
+          validación clínica, análisis sistemático de errores y evaluación 
+          de la viabilidad.
+    
+    \item \textbf{Experimentación y evaluación} (mayo--junio 2026): 
+          ejecución de las pruebas con las configuraciones seleccionadas, 
+          comparando estadísticas de rendimiento de los modelos candidatos 
+          y realizando un análisis de los resultados obtenidos.
+    
+    \item \textbf{Redacción de la memoria} (mayo--junio 2026): elaboración 
+          de la documentación, integración de resultados y preparación de 
+          la defensa.
+\end{enumerate}
+
+\begin{figure}[htb]
+\centering
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}
+    \definecolor{fase1}{RGB}{177,0,114}
+    \definecolor{fase2}{RGB}{50,110,118}
+    \definecolor{fase3}{RGB}{100,100,100}
+    
+    % Timeline (Nov 2025 - Jun 2026 = 8 meses, 2cm por mes)
+    \draw[thick] (0,0) -- (16,0);
+    \foreach \x/\m in {0/Nov, 2/Dic, 4/Ene, 6/Feb, 8/Mar, 10/Abr, 12/May, 14/Jun, 16/Jul} {
+        \draw[thick] (\x,-0.15) -- (\x,0.15);
+        \node[below] at (\x,-0.2) {\footnotesize\m};
+    }
+    
+    % Bars
+    \fill[fase1!60, rounded corners=2pt] (0,0.8) rectangle (4.1,1.3);
+    \node[right, font=\footnotesize] at (0,1.05) 
+        {1. Definición y exploración};
+    
+    \fill[fase2!60, rounded corners=2pt] (2,1.6) rectangle (10,2.1);
+    \node[right, font=\footnotesize] at (2.1,1.85) 
+        {2. Experimentación con arquitecturas};
+    
+    \fill[fase2!80, rounded corners=2pt] (6,2.4) rectangle (13,2.9);
+    \node[right, font=\footnotesize] at (6.1,2.65) 
+        {3. Interpretabilidad y análisis};
+    
+    \fill[fase1!40, rounded corners=2pt] (11,3.2) rectangle (15,3.7);
+    \node[right, font=\footnotesize] at (11.1,3.45) 
+        {4. Experimentos finales};
+    
+    \fill[fase3!40, rounded corners=2pt] (12,4.0) rectangle (16,4.5);
+    \node[right, font=\footnotesize] at (12.1,4.25) 
+        {5. Redacción};
+\end{tikzpicture}%
+}
+\caption{Diagrama de Gantt con la planificación temporal del proyecto.}
+\label{fig:gantt}
+\end{figure}
+
+\subsection{Estimación de costes}
+\label{subsec:costes}
+
+El cuadro~\ref{tab:costes} recoge la estimación de los costes asociados al 
+proyecto. Los salarios se estiman a partir de datos del mercado laboral español 
+para perfiles tecnológicos junior y docentes universitarios~\cite{manfred2026}.
+
+\begin{table}[htb]
+\centering
+\caption{Estimación de costes del proyecto.}
+\label{tab:costes}
+\rowcolors{2}{white}{udcgray!25}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llrr}
+\rowcolor{udcpink!25}
+\textbf{Tipo} & \textbf{Recurso} & \textbf{Cantidad / Duración} & \textbf{Coste (€)} \\\hline
+Material  & Kaggle Notebooks          & 1                               & 0 \\
+Material  & Overleaf                  & 1                               & 0 \\
+Material  & Ordenador portátil        & 1                               & 900 \\
+Material  & Electricidad              & 210 días                        & 315 \\
+Material  & Conexión a Internet       & 210 días                        & 210 \\
+Personal  & Alumno                    & 3\,h/día $\times$ 210 días = 630\,h & 8\,820 \\
+Personal  & Tutora                    & 40\,h                           & 1\,384 \\
+Personal  & Tutor                     & 40\,h                           & 1\,384 \\\hline
+          & \multicolumn{2}{r}{\textbf{Coste total del proyecto (€)}} & \textbf{13\,013} \\
+\end{tabular}%
+}
+\end{table}
+
+%==========================================================================
+\section{Herramientas y entorno}
+\label{sec:herramientas}
+%==========================================================================
+En esta sección se describen las principales herramientas de software y el 
+entorno de ejecución empleados durante el desarrollo del proyecto.
+
+El desarrollo del sistema se realiza íntegramente en Python, empleando las 
+siguientes herramientas principales:
+
+\begin{itemize}
+    \item \textbf{PyTorch}~\cite{paszke2019}: entorno de aprendizaje profundo 
+          utilizado para la implementación y entrenamiento del modelo CASCADE.
+    \item \textbf{OpenCV}~\cite{bradski2000}: biblioteca de visión por computador 
+          empleada para el preprocesamiento de imagen (CLAHE, redimensionado, 
+          rotaciones).
+    \item \textbf{NumPy y Pandas:} manipulación de datos numéricos y tabulares, 
+          carga del conjunto de datos MRNet y gestión de etiquetas.
+    \item \textbf{Matplotlib:} generación de figuras, curvas 
+          ROC~\cite{fawcett2006}, mapas de atención y visualizaciones de 
+          GradCAM++.
+    \item \textbf{SciPy:} análisis estadístico (tests $t$ pareados, test de 
+          Wilcoxon, tamaño del efecto de Cohen~\cite{cohen1988}).
+\end{itemize}
+
+El entorno de ejecución es \textbf{Kaggle Notebooks} con GPU Tesla T4 (16~GB 
+VRAM), sesiones de hasta 12 horas y persistencia de archivos activada. 
+%Las limitaciones de este entorno determinan decisiones de diseño como la resolución 
+%de las imágenes (224$\times$224), el tamaño de \textit{batch} (2) y el 
+%\textit{backbone} empleado (ResNet-18).
+
+%==========================================================================
+\section{Estructura de la memoria}
+\label{sec:estructura}
+%==========================================================================
+
+El resto de la presente memoria académica se estructura y organiza de la siguiente manera:
+ 
+\begin{itemize}
+    \item \textbf{Capítulo~\ref{chap:estado_arte}: Estado del arte.} Revisa los 
+          trabajos previos en detección de lesiones del LCA, técnicas de 
+          preprocesamiento en RM y métodos de interpretabilidad.
+    
+    \item \textbf{Capítulo~\ref{chap:preparacion}: Preparación de datos.} 
+          Detalla el análisis exploratorio del conjunto de datos y el flujo de 
+          preprocesamiento, incluyendo CLAHE y la máscara de atención anatómica.
+    
+    \item \textbf{Capítulo~\ref{chap:cascade}: Metodología CASCADE.} Describe 
+          el diseño del sistema en cascada, las decisiones arquitectónicas y la 
+          evolución iterativa del modelo.
+    
+    \item \textbf{Capítulo~\ref{chap:resultados}: Resultados.} Presenta los 
+          resultados experimentales, el análisis estadístico, la 
+          interpretabilidad y los reportes clínicos.
+    
+    \item \textbf{Capítulo~\ref{chap:conclusiones}: Conclusiones.} Sintetiza las 
+          aportaciones, las limitaciones y las líneas futuras de investigación.
+\end{itemize}

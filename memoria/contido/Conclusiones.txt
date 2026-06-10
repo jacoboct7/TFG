@@ -1,0 +1,191 @@
+\chapter{Conclusiones}
+\label{chap:conclusiones}
+
+\lettrine{E}{ste} capítulo sintetiza las principales aportaciones del trabajo,
+evalúa el grado de cumplimiento de los objetivos planteados, discute las
+limitaciones identificadas y propone líneas de investigación futura.
+
+%==========================================================================
+\section{Aportaciones del trabajo}
+\label{sec:aportaciones}
+%==========================================================================
+
+Este trabajo presenta CASCADE, un sistema de detección automática de lesiones
+del ligamento cruzado anterior en resonancia magnética de rodilla basado en
+aprendizaje profundo. Las aportaciones se agrupan en cuatro ámbitos.
+
+En el ámbito del \textbf{rendimiento predictivo}, el sistema alcanza un AUC
+medio de 0,838 (IC\,95\,\% [0,811; 0,865]) con una sensibilidad del
+84,7\,\% y una especificidad del 64,0\,\% en validación cruzada
+estratificada de 5 \textit{folds}~\cite{kohavi1995} sobre los 1\,250 casos
+del conjunto de datos MRNet. La variabilidad reducida entre \textit{folds} (desviación
+estándar del AUC de 0,022) indica un comportamiento estable del modelo. La
+Fase 1 de triaje alcanza un AUC de 0,888 y, con un umbral conservador de
+0,30, una sensibilidad del 99,0\,\%, lo que permite filtrar con seguridad el
+4,4\,\% de los casos más claramente normales antes de la clasificación
+específica.
+
+En el ámbito del \textbf{preprocesamiento}, la contribución de CLAHE~\cite{pizer1987} se ha
+validado empíricamente mediante un estudio de ablación con análisis
+estadístico: la mejora del AUC de 0,758 a 0,838 es estadísticamente
+significativa ($t = 6{,}567$, $p = 0{,}003$) con un tamaño del efecto muy
+elevado ($d = 2{,}94$)~\cite{cohen1988}. Esta es la decisión de diseño con mayor respaldo
+estadístico de las cuantificadas en el trabajo.
+
+En el ámbito de la \textbf{arquitectura}, la sustitución del \textit{max pooling}~\cite{bien2018} por
+\textit{attention pooling}~\cite{ilse2018} sobre los cortes del volumen ha
+mostrado una mejora del AUC de 0,793 a 0,838, con un tamaño del efecto
+grande ($d = 1{,}19$), aunque sin alcanzar significancia estadística con los
+cinco \textit{folds} disponibles ($p = 0{,}056$). El módulo de atención,
+con un coste adicional de únicamente 1\,350 parámetros por rama, proporciona
+además un mapa de relevancia por corte que sirve como herramienta de
+interpretabilidad. La estrategia de fusión ponderada por plano con pesos
+anatómicamente justificados ha sido validada por el estudio de ablación: el
+plano sagital de forma aislada alcanza un AUC de 0,893, frente al 0,555 del
+plano coronal y el 0,790 del axial, confirmando la asignación diferencial
+de pesos.
+
+En el ámbito de la \textbf{interpretabilidad}, se ha demostrado
+empíricamente que el corte de máxima atención difiere del corte central en
+más del 96\,\% de los casos, con desplazamientos medios de 7,0 cortes en
+el plano sagital, 9,7 en el coronal y 7,5 en el axial. Este resultado
+invalida la práctica habitual de aplicar GradCAM~\cite{selvaraju2017} sobre el
+corte central y justifica el enfoque propuesto~\cite{singh2020}. Como validación cualitativa fuera del dominio
+de entrenamiento, el sistema detectó ambas lesiones presentes en un caso
+clínico real (rotura parcial del LCA y lesión meniscal), incluyendo la
+lesión meniscal que no había sido identificada en el informe radiológico
+inicial.
+
+%==========================================================================
+\section{Cumplimiento de objetivos}
+\label{sec:cumplimiento}
+%==========================================================================
+
+Los cinco objetivos específicos planteados en el
+Capítulo~\ref{chap:introduccion} se han cumplido en los términos siguientes.
+
+El primero, relativo al análisis del conjunto de datos, se abordó mediante
+un estudio exploratorio documentado en el
+Capítulo~\ref{chap:preparacion}, que reveló el marcado desbalance de la
+etiqueta del LCA (21,0\,\% de positivos, ratio 1:4) y la variabilidad en
+el número de cortes por plano, justificando las decisiones de
+preprocesamiento adoptadas.
+
+El segundo, relativo al diseño e implementación del sistema, se materializó
+en el sistema CASCADE descrito en el Capítulo~\ref{chap:cascade}, que
+integra dos fases secuenciales, seis modelos ResNet-18~\cite{he2016} con
+\textit{attention pooling} y fusión ponderada en espacio de probabilidades
+con pesos anatómicamente fundamentados.
+
+El tercero, sobre el impacto de las estrategias de preprocesamiento y
+diseño arquitectónico, se abordó mediante estudios de ablación
+cuantitativos para CLAHE, \textit{attention pooling}, resolución espacial,
+aumento de datos y ablación por plano, con análisis de significancia
+estadística y tamaño del efecto donde el número de muestras lo permitía.
+
+El cuarto, relativo a la evaluación experimental, se desarrolló mediante
+validación cruzada estratificada de 5 \textit{folds}~\cite{kohavi1995} con
+cálculo de intervalos de confianza al 95\,\%, lo que proporciona una estimación más
+robusta del rendimiento frente a las particiones fijas de 120 casos
+empleadas en trabajos previos~\cite{bien2018,azcona2020}.
+
+El quinto, sobre la interpretabilidad, se abordó mediante la integración de
+GradCAM++~\cite{chattopadhay2018} sobre los cortes de máxima atención, el
+análisis cuantitativo de
+la discrepancia entre el corte de atención y el corte central, y la
+generación de reportes clínicos estructurados con niveles de sospecha y
+análisis desglosado por plano.
+
+%==========================================================================
+\section{Limitaciones}
+\label{sec:limitaciones}
+%==========================================================================
+
+Los resultados obtenidos deben interpretarse dentro del contexto de las
+siguientes limitaciones, cuyo reconocimiento explícito es parte de una
+evaluación científicamente honesta del sistema.
+
+La limitación más relevante desde el punto de vista de la validación externa
+es la \textbf{dependencia de un único conjunto de datos} procedente de un
+único centro hospitalario (Stanford University Medical Center) y un único
+protocolo de adquisición. Los estudios de resonancia magnética presentan
+una variabilidad considerable entre centros en cuanto a equipamiento,
+parámetros de adquisición y características de contraste. La capacidad del
+sistema para generalizar a otros entornos hospitalarios está respaldada de
+forma cualitativa por el resultado del caso clínico personal, adquirido con
+secuencia PD con supresión grasa en un centro distinto, pero no ha sido
+validada de forma sistemática.
+
+La segunda limitación es la \textbf{potencia estadística reducida} derivada
+de la disponibilidad de únicamente cinco \textit{folds} en la validación
+cruzada. Esta limitación impide establecer con significancia estadística la
+superioridad del \textit{attention pooling} sobre el \textit{max pooling}
+($p = 0{,}056$) a pesar de un tamaño del efecto grande, y hace que las
+comparativas de ablación sobre configuraciones individuales sean indicativas
+en lugar de concluyentes.
+
+La tercera limitación es la \textbf{ausencia de comparativa directa con
+lectores humanos} sobre el mismo conjunto de test. Las métricas absolutas
+reportadas (sensibilidad 84,7\,\%, especificidad 64,0\,\%) no permiten
+cuantificar el beneficio clínico real respecto a la práctica radiológica
+estándar sin un estudio de comparación directa sobre los mismos casos.
+
+La cuarta limitación es la \textbf{granularidad binaria de las etiquetas}:
+el sistema detecta la presencia o ausencia de lesión del LCA, pero no
+distingue entre rotura parcial y completa, ni gradúa la extensión de la
+lesión. Esta distinción es clínicamente relevante para la toma de decisiones
+terapéuticas.
+
+Finalmente, en el plano de la interpretabilidad, el corte de máxima
+atención del plano coronal en el caso clínico personal se situó en el primer
+corte del volumen, lo que sugiere una posible influencia del rellenado de
+bordes (\textit{edge padding}) en este plano. Este fenómeno no ha sido
+analizado de forma sistemática sobre el conjunto de test y constituye una
+limitación del módulo de atención a tener en cuenta en aplicaciones clínicas.
+
+%==========================================================================
+\section{Líneas futuras de investigación}
+\label{sec:futuras}
+%==========================================================================
+
+Las limitaciones identificadas apuntan a las siguientes líneas de trabajo
+que podrían ampliar el alcance y la solidez del sistema.
+
+La \textbf{validación multicéntrica} constituye el paso más relevante para
+evaluar la capacidad de generalización del sistema. Un estudio sobre datos
+procedentes de centros con distintos equipos y protocolos de adquisición
+permitiría cuantificar la degradación del rendimiento debida al cambio de
+dominio y orientar estrategias de adaptación, como el ajuste fino con un
+subconjunto de datos del centro destino.
+
+La \textbf{comparativa directa con radiólogos} sobre el mismo conjunto de
+test proporcionaría una medida clínicamente significativa del valor añadido
+del sistema, complementando las métricas absolutas aquí reportadas y
+permitiendo cuantificar si el sistema actuaría como una segunda lectura
+efectiva en la práctica.
+
+Las \textbf{arquitecturas volumétricas nativas}, como redes convolucionales
+tridimensionales o transformadores de visión adaptados al procesamiento
+volumétrico, podrían capturar la continuidad espacial de la lesión en las
+tres dimensiones sin recurrir a la discretización en cortes independientes,
+eliminando la necesidad del módulo de agregación.
+
+La \textbf{clasificación de gravedad} de las lesiones detectadas (rotura
+parcial frente a completa, grado de afectación meniscal) representaría una
+extensión natural del sistema con mayor utilidad clínica directa, dado que
+esta distinción condiciona el planteamiento terapéutico.
+
+La \textbf{cuantificación de incertidumbre} por caso, mediante técnicas como
+\textit{MC-Dropout}~\cite{gal2016} o predicción conformal, enriquecería los reportes
+clínicos con un indicador de confianza del sistema en cada predicción
+individual. De los 7 falsos negativos del mejor \textit{fold}, solo 1
+recibió una probabilidad muy baja (6,3\,\%), lo que sugiere que la mayoría
+son casos límite en los que una señal de baja confianza podría alertar al
+radiólogo de la necesidad de un análisis más cuidadoso.
+
+Por último, la \textbf{extensión a otras patologías de rodilla} documentadas
+en el conjunto de datos MRNet, como las lesiones del ligamento cruzado
+posterior o las alteraciones osteocondrales, ampliaría el alcance diagnóstico
+del sistema sin modificar su arquitectura fundamental, dado que la
+arquitectura CASCADE está diseñada para incorporar nuevas tareas de
+clasificación en la Fase 2 de forma modular.

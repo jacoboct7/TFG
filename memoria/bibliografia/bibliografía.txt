@@ -1,0 +1,378 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BIBLIOGRAFÍA                                                                 %
+%                                                                              %
+% Objetivo: Recopilar las referencias a información utilizadas y/o algunas     %
+%           otras que puedan resultar interesantes                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MRI vs artroscopia - revision sistematica, variabilidad interobservador
+@Article{crawford2007,
+  author  = {Ruth Crawford and Gayle Walley and Stephen Bridgman and 
+             Nicola Maffulli},
+  title   = {Magnetic resonance imaging versus arthroscopy in the 
+             diagnosis of knee pathology, concentrating on meniscal 
+             lesions and {ACL} tears: a systematic review},
+  journal = {British Medical Bulletin},
+  volume  = {84},
+  pages   = {5--23},
+  year    = {2007},
+  doi     = {10.1093/bmb/ldm022}
+}
+
+% DL en imagen medica - clasificacion lesiones cutaneas
+@Article{esteva2017,
+  author  = {Andre Esteva and Brett Kuprel and Roberto A. Novoa and 
+             Justin Ko and Susan M. Swetter and Helen M. Blau and 
+             Sebastian Thrun},
+  title   = {Dermatologist-level classification of skin cancer with 
+             deep neural networks},
+  journal = {Nature},
+  volume  = {542},
+  number  = {7639},
+  pages   = {115--118},
+  year    = {2017},
+  doi     = {10.1038/nature21056}
+}
+@Misc{manfred2026,
+  author = {{Manfred}},
+  title  = {Guía Salarial 2026: Salarios en tecnología en {E}spaña},
+  year   = {2026},
+  url    = {https://www.getmanfred.com/blog/guia-salarial-2026-salarios-en-tecnologia-espana-manfred},
+}
+
+@Article{bien2018,
+  author  = {Nicholas Bien and Pranav Rajpurkar and Robyn L. Ball and others},
+  title   = {Deep-learning-assisted diagnosis for knee magnetic resonance imaging: 
+             Development and retrospective validation of {MRNet}},
+  journal = {PLOS Medicine},
+  volume  = {15},
+  number  = {11},
+  pages   = {e1002699},
+  year    = {2018},
+  doi     = {10.1371/journal.pmed.1002699}
+}
+
+@InProceedings{azcona2020,
+  author    = {David Azcona and Kevin McGuinness and Alan F. Smeaton},
+  title     = {A Comparative Study of Existing and New Deep Learning Methods for 
+               Detecting Knee Injuries using the {MRNet} Dataset},
+  booktitle = {2020 International Conference on Intelligent Data Science 
+               Technologies and Applications (IDSTA)},
+  pages     = {149--155},
+  year      = {2020},
+  doi       = {10.1109/IDSTA50958.2020.9264030}
+}
+
+@Article{mdpi2021mrnet,
+  author  = {Andreas Panteli and others},
+  title   = {Detection and Classification of Knee Injuries from {MR} Images 
+             Using the {MRNet} Dataset with Progressively Operating Deep 
+             Learning Methods},
+  journal = {Machine Learning and Knowledge Extraction},
+  volume  = {3},
+  number  = {4},
+  pages   = {1001--1014},
+  year    = {2021},
+  doi     = {10.3390/make3040050}
+}
+
+@InProceedings{he2016,
+  author    = {Kaiming He and Xiangyu Zhang and Shaoqing Ren and Jian Sun},
+  title     = {Deep Residual Learning for Image Recognition},
+  booktitle = {Proceedings of the IEEE Conference on Computer Vision and 
+               Pattern Recognition (CVPR)},
+  pages     = {770--778},
+  year      = {2016},
+  doi       = {10.1109/CVPR.2016.90}
+}
+
+@InProceedings{lin2017focal,
+  author    = {Tsung-Yi Lin and Priya Goyal and Ross Girshick and others},
+  title     = {Focal Loss for Dense Object Detection},
+  booktitle = {Proceedings of the IEEE International Conference on Computer 
+               Vision (ICCV)},
+  pages     = {2980--2988},
+  year      = {2017},
+  doi       = {10.1109/ICCV.2017.324}
+}
+
+@InProceedings{selvaraju2017,
+  author    = {Ramprasaath R. Selvaraju and Michael Cogswell and Abhishek Das 
+               and others},
+  title     = {Grad-{CAM}: Visual Explanations from Deep Networks via 
+               Gradient-Based Localization},
+  booktitle = {Proceedings of the IEEE International Conference on Computer 
+               Vision (ICCV)},
+  pages     = {618--626},
+  year      = {2017},
+  doi       = {10.1109/ICCV.2017.74}
+}
+% Precision diagnostica de MRI para ACL - sensibilidad 87%, especificidad 93%
+@Article{phelan2016,
+  author  = {Nigel Phelan and Patrick Rowland and Rose Galvin and 
+             John M. O'Byrne},
+  title   = {A systematic review and meta-analysis of the diagnostic 
+             accuracy of {MRI} for suspected {ACL} and meniscal tears 
+             of the knee},
+  journal = {Knee Surgery, Sports Traumatology, Arthroscopy},
+  volume  = {24},
+  number  = {5},
+  pages   = {1525--1539},
+  year    = {2016},
+  doi     = {10.1007/s00167-015-3861-8}
+}
+
+@InProceedings{chattopadhay2018,
+  author    = {Aditya Chattopadhay and Anirban Sarkar and Prantik Howlader 
+               and Vineeth N. Balasubramanian},
+  title     = {Grad-{CAM}++: Generalized Gradient-Based Visual Explanations 
+               for Deep Convolutional Networks},
+  booktitle = {2018 IEEE Winter Conference on Applications of Computer Vision 
+               (WACV)},
+  pages     = {839--847},
+  year      = {2018},
+  doi       = {10.1109/WACV.2018.00097}
+}
+
+@Article{pizer1987,
+  author  = {Stephen M. Pizer and E. Philip Amburn and John D. Austin 
+             and others},
+  title   = {Adaptive Histogram Equalization and Its Variations},
+  journal = {Computer Vision, Graphics, and Image Processing},
+  volume  = {39},
+  number  = {3},
+  pages   = {355--368},
+  year    = {1987},
+  doi     = {10.1016/S0734-189X(87)80186-X}
+}
+
+@Article{sanders2016,
+  author  = {Ted L. Sanders and Hilal Maradit Kremers and 
+             Andrew J. Bryan and others},
+  title   = {Incidence of Anterior Cruciate Ligament Tears and 
+             Reconstruction: A 21-Year Population-Based Study},
+  journal = {The American Journal of Sports Medicine},
+  volume  = {44},
+  number  = {6},
+  pages   = {1502--1507},
+  year    = {2016},
+  doi     = {10.1177/0363546516629944}
+}
+
+
+@Article{litjens2017,
+  author  = {Geert Litjens and Thijs Kooi and Babak Ehteshami Bejnordi 
+             and others},
+  title   = {A Survey on Deep Learning in Medical Image Analysis},
+  journal = {Medical Image Analysis},
+  volume  = {42},
+  pages   = {60--88},
+  year    = {2017},
+  doi     = {10.1016/j.media.2017.07.005}
+}
+
+@InProceedings{krizhevsky2012,
+  author    = {Alex Krizhevsky and Ilya Sutskever and Geoffrey E. Hinton},
+  title     = {{ImageNet} Classification with Deep Convolutional Neural 
+               Networks},
+  booktitle = {Advances in Neural Information Processing Systems (NIPS)},
+  volume    = {25},
+  pages     = {1097--1105},
+  year      = {2012}
+}
+
+@InProceedings{deng2009,
+  author    = {Jia Deng and Wei Dong and Richard Socher and Li-Jia Li and 
+               Kai Li and Li Fei-Fei},
+  title     = {{ImageNet}: A Large-Scale Hierarchical Image Database},
+  booktitle = {2009 IEEE Conference on Computer Vision and Pattern 
+               Recognition (CVPR)},
+  pages     = {248--255},
+  year      = {2009},
+  doi       = {10.1109/CVPR.2009.5206848}
+}
+@Article{kohavi1995,
+  author  = {Ron Kohavi},
+  title   = {A Study of Cross-Validation and Bootstrap for Accuracy 
+             Estimation and Model Selection},
+  journal = {Proceedings of the International Joint Conference on 
+             Artificial Intelligence (IJCAI)},
+  volume  = {14},
+  number  = {2},
+  pages   = {1137--1145},
+  year    = {1995}
+}
+
+@Article{singh2020,
+  author  = {Amitojdeep Singh and Sourya Sengupta and Vasudevan 
+             Lakshminarayanan},
+  title   = {Explainable Deep Learning Models in Medical Image Analysis},
+  journal = {Journal of Imaging},
+  volume  = {6},
+  number  = {6},
+  pages   = {52},
+  year    = {2020},
+  doi     = {10.3390/jimaging6060052}
+}
+
+@InProceedings{tan2019,
+  author    = {Mingxing Tan and Quoc V. Le},
+  title     = {{EfficientNet}: Rethinking Model Scaling for Convolutional 
+               Neural Networks},
+  booktitle = {Proceedings of the 36th International Conference on Machine 
+               Learning (ICML)},
+  volume    = {97},
+  pages     = {6105--6114},
+  year      = {2019},
+  publisher = {PMLR}
+}
+
+@InProceedings{ilse2018,
+  author    = {Maximilian Ilse and Jakub M. Tomczak and Max Welling},
+  title     = {Attention-based Deep Multiple Instance Learning},
+  booktitle = {Proceedings of the 35th International Conference on Machine 
+               Learning (ICML)},
+  pages     = {2127--2136},
+  year      = {2018}
+}
+
+@Article{shorten2019,
+  author  = {Connor Shorten and Taghi M. Khoshgoftaar},
+  title   = {A Survey on Image Data Augmentation for Deep Learning},
+  journal = {Journal of Big Data},
+  volume  = {6},
+  number  = {1},
+  pages   = {60},
+  year    = {2019},
+  doi     = {10.1186/s40537-019-0197-0}
+}
+
+@Article{fawcett2006,
+  author  = {Tom Fawcett},
+  title   = {An Introduction to {ROC} Analysis},
+  journal = {Pattern Recognition Letters},
+  volume  = {27},
+  number  = {8},
+  pages   = {861--874},
+  year    = {2006},
+  doi     = {10.1016/j.patrec.2005.10.010}
+}
+
+@Book{cohen1988,
+  author    = {Jacob Cohen},
+  title     = {Statistical Power Analysis for the Behavioral Sciences},
+  edition   = {2},
+  publisher = {Lawrence Erlbaum Associates},
+  year      = {1988}
+}
+
+@InProceedings{paszke2019,
+  author    = {Adam Paszke and Sam Gross and Francisco Massa and others},
+  title     = {{PyTorch}: An Imperative Style, High-Performance Deep 
+               Learning Library},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {32},
+  pages     = {8024--8035},
+  year      = {2019}
+}
+
+@Article{bradski2000,
+  author  = {Gary Bradski},
+  title   = {The {OpenCV} Library},
+  journal = {Dr. Dobb's Journal of Software Tools},
+  volume  = {25},
+  number  = {11},
+  pages   = {120--125},
+  year    = {2000}
+}
+
+@Article{siouras2022,
+  author  = {Siouras, Athanasios and Moustakidis, Serafeim and Giannakidis, Archontis and
+             Chalatsis, Georgios and Liampas, Ioannis and Vlychou, Marianna and
+             Hantes, Michael and Tasoulis, Sotiris and Tsaopoulos, Dimitrios},
+  title   = {Knee Injury Detection Using Deep Learning on {MRI} Studies:
+             A Systematic Review},
+  journal = {Diagnostics},
+  volume  = {12},
+  number  = {2},
+  pages   = {537},
+  year    = {2022},
+  doi     = {10.3390/diagnostics12020537}
+}
+
+@Article{wang2025,
+  author  = {Wang, Y. and others},
+  title   = {Artificial Intelligence-Assisted Accurate Diagnosis of 
+             Anterior Cruciate Ligament Tears Using Customized {CNN} 
+             and {YOLOv9}},
+  journal = {Diagnostics},
+  volume  = {15},
+  number  = {2},
+  pages   = {198},
+  year    = {2025},
+  doi     = {10.3390/diagnostics15020198}
+}
+
+@Article{chea2020,
+  author  = {Payam Chea and Jason C. Mandell},
+  title   = {Current Applications and Future Directions of Deep Learning 
+             in Musculoskeletal Radiology},
+  journal = {Skeletal Radiology},
+  volume  = {49},
+  number  = {2},
+  pages   = {183--197},
+  year    = {2020},
+  doi     = {10.1007/s00256-019-03284-z}
+}
+
+@Article{simonyan2015,
+  author  = {Karen Simonyan and Andrew Zisserman},
+  title   = {Very Deep Convolutional Networks for Large-Scale Image
+             Recognition},
+  journal = {arXiv preprint arXiv:1409.1556},
+  year    = {2015}
+}
+
+% Dropout como regularizacion
+@Article{srivastava2014,
+  author  = {Nitish Srivastava and Geoffrey Hinton and Alex Krizhevsky and
+             Ilya Sutskever and Ruslan Salakhutdinov},
+  title   = {Dropout: A Simple Way to Prevent Neural Networks from
+             Overfitting},
+  journal = {Journal of Machine Learning Research},
+  volume  = {15},
+  number  = {1},
+  pages   = {1929--1958},
+  year    = {2014}
+}
+
+% Optimizador Adam
+@InProceedings{kingma2015,
+  author    = {Diederik P. Kingma and Jimmy Ba},
+  title     = {Adam: A Method for Stochastic Optimization},
+  booktitle = {3rd International Conference on Learning Representations
+               (ICLR)},
+  year      = {2015}
+}
+
+% Transferibilidad de caracteristicas en redes profundas
+@InProceedings{yosinski2014,
+  author    = {Jason Yosinski and Jeff Clune and Yoshua Bengio and
+               Hod Lipson},
+  title     = {How Transferable are Features in Deep Neural Networks?},
+  booktitle = {Advances in Neural Information Processing Systems (NIPS)},
+  volume    = {27},
+  pages     = {3320--3328},
+  year      = {2014}
+}
+
+% Dropout como aproximacion bayesiana - incertidumbre en DL
+@InProceedings{gal2016,
+  author    = {Yarin Gal and Zoubin Ghahramani},
+  title     = {Dropout as a {B}ayesian Approximation: Representing Model
+               Uncertainty in Deep Learning},
+  booktitle = {Proceedings of the 33rd International Conference on
+               Machine Learning (ICML)},
+  volume    = {48},
+  pages     = {1050--1059},
+  year      = {2016}
+}

@@ -1,0 +1,209 @@
+{
+  "n_cases": 6,
+  "cases": [
+    {
+      "case_id": "0016",
+      "probability": 0.012003989890217781,
+      "prediction": "ACL-",
+      "true_label": "ACL-",
+      "level": "MUY BAJO",
+      "agreement": 0.9863763196626678,
+      "anomaly_prob": "0.78086436",
+      "anomaly_pred": "SI",
+      "plane_probs": [
+        0.0026817035395652056,
+        0.029929064214229584,
+        0.0005387995042838156
+      ],
+      "plane_quality": [
+        [
+          0.8275861740112305,
+          "centro"
+        ],
+        [
+          0.7422680258750916,
+          "centro"
+        ],
+        [
+          0.5733788013458252,
+          "distribuido"
+        ]
+      ],
+      "winning_slices": {
+        "sagittal": 28,
+        "coronal": 10,
+        "axial": 15
+      }
+    },
+    {
+      "case_id": "0018",
+      "probability": 0.9203524589538574,
+      "prediction": "ACL+",
+      "true_label": "ACL+",
+      "level": "ALTO",
+      "agreement": 0.9383547902107239,
+      "anomaly_prob": "0.6919074",
+      "anomaly_pred": "SI",
+      "plane_probs": [
+        0.9972705245018005,
+        0.8739801049232483,
+        0.6596060991287231
+      ],
+      "plane_quality": [
+        [
+          0.8275861740112305,
+          "centro"
+        ],
+        [
+          0.5733788013458252,
+          "distribuido"
+        ],
+        [
+          0.48979589343070984,
+          "distribuido"
+        ]
+      ],
+      "winning_slices": {
+        "sagittal": 9,
+        "coronal": 13,
+        "axial": 3
+      }
+    },
+    {
+      "case_id": "0019",
+      "probability": 0.42252635955810547,
+      "prediction": "ACL+",
+      "true_label": "ACL-",
+      "level": "MODERADO",
+      "agreement": 0.8070419058203697,
+      "anomaly_prob": "0.79001176",
+      "anomaly_pred": "SI",
+      "plane_probs": [
+        0.5748516917228699,
+        0.18893550336360931,
+        0.4023052752017975
+      ],
+      "plane_quality": [
+        [
+          0.9134948253631592,
+          "centro"
+        ],
+        [
+          0.6575342416763306,
+          "centro"
+        ],
+        [
+          0.6575342416763306,
+          "centro"
+        ]
+      ],
+      "winning_slices": {
+        "sagittal": 15,
+        "coronal": 14,
+        "axial": 13
+      }
+    },
+    {
+      "case_id": "0027",
+      "probability": 0.6523115038871765,
+      "prediction": "ACL+",
+      "true_label": "ACL-",
+      "level": "MODERADO",
+      "agreement": 0.5688694156706333,
+      "anomaly_prob": "0.46350324",
+      "anomaly_pred": "SI",
+      "plane_probs": [
+        0.9597917795181274,
+        0.09753061085939407,
+        0.9029032588005066
+      ],
+      "plane_quality": [
+        [
+          1.0,
+          "centro"
+        ],
+        [
+          0.8275861740112305,
+          "centro"
+        ],
+        [
+          0.5733788013458252,
+          "distribuido"
+        ]
+      ],
+      "winning_slices": {
+        "sagittal": 21,
+        "coronal": 27,
+        "axial": 8
+      }
+    },
+    {
+      "case_id": "0029",
+      "probability": 0.14783240854740143,
+      "prediction": "ACL-",
+      "true_label": "ACL-",
+      "level": "MUY BAJO",
+      "agreement": 0.9301559999585152,
+      "anomaly_prob": "0.46363226",
+      "anomaly_pred": "SI",
+      "plane_probs": [
+        0.10236969590187073,
+        0.2420576959848404,
+        0.06808878481388092
+      ],
+      "plane_quality": [
+        [
+          1.0,
+          "centro"
+        ],
+        [
+          0.8275861740112305,
+          "centro"
+        ],
+        [
+          0.4067796468734741,
+          "distribuido"
+        ]
+      ],
+      "winning_slices": {
+        "sagittal": 4,
+        "coronal": 28,
+        "axial": 15
+      }
+    },
+    {
+      "case_id": "0072",
+      "probability": 0.7982555627822876,
+      "prediction": "ACL+",
+      "true_label": "ACL+",
+      "level": "ALTO",
+      "agreement": 0.7648758143186569,
+      "anomaly_prob": "0.89651227",
+      "anomaly_pred": "SI",
+      "plane_probs": [
+        0.9647318720817566,
+        0.49448350071907043,
+        0.9458383321762085
+      ],
+      "plane_quality": [
+        [
+          1.0,
+          "centro"
+        ],
+        [
+          0.9134948253631592,
+          "centro"
+        ],
+        [
+          0.6575342416763306,
+          "centro"
+        ]
+      ],
+      "winning_slices": {
+        "sagittal": 20,
+        "coronal": 23,
+        "axial": 2
+      }
+    }
+  ]
+}
