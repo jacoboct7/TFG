@@ -376,3 +376,45 @@
   pages     = {1050--1059},
   year      = {2016}
 }
+
+% Fatiga del radiologo - reduce la precision diagnostica a lo largo de la jornada
+@Article{krupinski2010,
+  author  = {Elizabeth A. Krupinski and Kevin S. Berbaum and
+             Robert T. Caldwell and Kevin M. Schartz and John Kim},
+  title   = {Long Radiology Workdays Reduce Detection and Accommodation
+             Accuracy},
+  journal = {Journal of the American College of Radiology},
+  volume  = {7},
+  number  = {9},
+  pages   = {698--704},
+  year    = {2010},
+  doi     = {10.1016/j.jacr.2010.03.004}
+}
+
+% DL en imagen medica - deteccion de retinopatia diabetica
+@Article{gulshan2016,
+  author  = {Varun Gulshan and Lily Peng and Marc Coram and
+             Martin C. Stumpe and others},
+  title   = {Development and Validation of a Deep Learning Algorithm for
+             Detection of Diabetic Retinopathy in Retinal Fundus Photographs},
+  journal = {JAMA},
+  volume  = {316},
+  number  = {22},
+  pages   = {2402--2410},
+  year    = {2016},
+  doi     = {10.1001/jama.2016.17216}
+}
+
+% Arquitectura avanzada sobre MRNet con AUC elevado para LCA (ELNet)
+@InProceedings{tsai2020,
+  author    = {Chen-Han Tsai and Nahum Kiryati and Eli Konen and
+               Iris Eshed and Arnaldo Mayer},
+  title     = {Knee Injury Detection using {MRI} with Efficiently-Layered
+               Network ({ELNet})},
+  booktitle = {Proceedings of the Third Conference on Medical Imaging with
+               Deep Learning (MIDL)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {121},
+  pages     = {784--794},
+  year      = {2020}
+}

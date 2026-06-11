@@ -18,7 +18,7 @@ Las redes neuronales convolucionales (\textit{Convolutional Neural Networks}, CN
 de imagen médica en la última década. El trabajo de Esteva et al.~\cite{esteva2017} en clasificación de lesiones
 cutáneas, donde los autores reportaron métricas de rendimiento comparables a
 las de dermatólogos certificados en un estudio experimental controlado, y los
-sistemas de detección de retinopatía diabética son ejemplos representativos de
+sistemas de detección de retinopatía diabética~\cite{gulshan2016} son ejemplos representativos de
 cómo el aprendizaje profundo ha alcanzado capacidades diagnósticas equiparables
 a las del experto humano en tareas bien definidas.
 
@@ -178,7 +178,7 @@ incorporando mecanismos de atención visual para ponderar las regiones más
 relevantes de cada corte, extracción de características multi-escala y fusión de
 características a nivel intermedio (\textit{feature-level fusion}) en vez de a
 nivel de decisión. Algunos de estos enfoques reportan AUCs superiores a 0,95
-para la detección de lesiones del LCA. Sin embargo, el incremento en la
+para la detección de lesiones del LCA~\cite{tsai2020}. Sin embargo, el incremento en la
 complejidad estructural conlleva un coste computacional significativamente mayor
 y, con frecuencia, una reducción en la interpretabilidad del modelo, lo que
 puede limitar su adopción en entornos clínicos~\cite{chea2020}.

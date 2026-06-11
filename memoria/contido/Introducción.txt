@@ -23,8 +23,9 @@ entre radiólogos que oscilan entre el 75\,\% y el
 pueden llegar a conclusiones diferentes ante las mismas imágenes. A esta 
 variabilidad contribuye el desgaste cognitivo acumulado durante la jornada 
 laboral: un mismo profesional puede modificar su criterio diagnóstico sobre una 
-misma imagen en función del momento del día y la carga de trabajo acumulada. Una 
-herramienta de asistencia automatizada permite reducir esta fatiga al ofrecer una 
+misma imagen en función del momento del día y la carga de trabajo
+acumulada~\cite{krupinski2010}. Una herramienta de asistencia automatizada
+permite reducir esta fatiga al ofrecer una
 segunda lectura objetiva y constante, mejorando no solo la detección directa sino 
 también el rendimiento del propio profesional al final de su jornada.
 
