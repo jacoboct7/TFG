@@ -176,8 +176,8 @@ con $\mathbf{W}_1 \in \mathbb{R}^{64 \times d}$ y $\mathbf{w}_2 \in
 \mathbb{R}^{64}$. La función $\tanh$ introduce no linealidad y la 
 normalización \textit{softmax} garantiza que los pesos $\alpha_s$ sumen 1.
 
-El módulo de atención añade únicamente 1\,350 parámetros por rama (menos 
-del 0,01\,\% del total), un coste negligible que se justifica por dos 
+El módulo de atención añade únicamente 257 parámetros por rama en la Fase 2
+(menos del 0,01\,\% del total), un coste negligible que se justifica por dos
 ventajas:
 
 \begin{itemize}

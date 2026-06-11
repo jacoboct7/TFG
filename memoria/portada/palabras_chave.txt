@@ -1,0 +1,26 @@
+\begin{multicols}{2}
+\begin{description}
+\item [\palabraschaveprincipal:] \mbox{} \\[-20pt]
+  \begin{itemize}
+    \item Aprendizaje profundo
+    \item Resonancia magnética de rodilla
+    \item Ligamento cruzado anterior
+    \item Diagnóstico asistido por computador
+    \item Redes neuronales convolucionales
+    \item Interpretabilidad
+    \item Conjunto de datos MRNet
+  \end{itemize}
+\end{description}
+\begin{description}
+\item [\palabraschavesecundaria:] \mbox{} \\[-20pt]
+  \begin{itemize}
+    \item Deep learning
+    \item Knee magnetic resonance imaging
+    \item Anterior cruciate ligament
+    \item Computer-aided diagnosis
+    \item Convolutional neural networks
+    \item Interpretability
+    \item MRNet dataset
+  \end{itemize}
+\end{description}
+\end{multicols}

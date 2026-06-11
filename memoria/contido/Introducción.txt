@@ -157,7 +157,7 @@ El desarrollo sigue un enfoque iterativo en el que cada versión del sistema se
 construye sobre la anterior, diagnosticando las limitaciones observadas y 
 proponiendo soluciones específicas. Este proceso, que parte de un modelo inicial 
 con una sensibilidad del 42,8\,\% y un AUC de 0,758 y evoluciona hasta un 
-sistema con un AUC de 0,838 y una sensibilidad del 84\,7\%, se documenta 
+sistema con un AUC de 0,838 y una sensibilidad del 84{,}7\,\%, se documenta 
 íntegramente en el Capítulo~\ref{chap:cascade}.
 
 %==========================================================================

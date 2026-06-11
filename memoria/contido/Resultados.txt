@@ -211,13 +211,20 @@ refuerza la robustez del rendimiento discriminativo del sistema.
 
 \subsection{Validación del impacto de CLAHE}
 
-Para cuantificar la contribución de CLAHE~\cite{pizer1987}, se comparó el rendimiento del sistema 
-con y sin esta técnica de preprocesamiento, manteniendo el resto del flujo 
-constante. La incorporación de CLAHE mejora el AUC de 0,758 a 0,838. Un test 
-$t$ pareado sobre los cinco \textit{folds} confirma que esta mejora es 
-estadísticamente significativa ($t = 6{,}567$, $p = 0{,}003$), con un tamaño del 
-efecto de Cohen muy elevado ($d = 2{,}94$)~\cite{cohen1988}. Este resultado valida 
-empíricamente la decisión de incorporar CLAHE al flujo de preprocesamiento.
+Para cuantificar la contribución de CLAHE~\cite{pizer1987} se comparó una
+versión temprana del sistema sin esta técnica de preprocesamiento (AUC 0,758)
+con la configuración final que la incorpora (AUC 0,838). Conviene precisar que
+ambas versiones difieren también en otras mejoras introducidas durante el
+desarrollo iterativo —en particular el mecanismo de \textit{attention pooling}
+y el aumento de la resolución espacial—, por lo que esta comparación refleja el
+efecto acumulado de dichos cambios respecto a la línea base previa a CLAHE. El
+incremento atribuible de forma aislada a CLAHE, evaluado entre dos versiones
+consecutivas que únicamente difieren en su aplicación, es de 0,758 a 0,793. Un
+test $t$ pareado sobre los cinco \textit{folds} entre la versión base y la
+final confirma que la mejora es estadísticamente significativa ($t = 6{,}567$,
+$p = 0{,}003$), con un tamaño del efecto de Cohen muy elevado
+($d = 2{,}94$)~\cite{cohen1988}. Este resultado valida empíricamente la
+decisión de incorporar CLAHE al flujo de preprocesamiento.
 
 \subsection{Impacto del \textit{attention pooling}}
 

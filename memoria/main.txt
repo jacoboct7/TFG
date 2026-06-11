@@ -118,7 +118,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \input{portada/portada}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PÁGINAS PRELIMINARES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -126,30 +125,36 @@
 
 
 % Dedicatoria (OPCIONAL - comentar si no quieres)
-\chapter*{Dedicatoria}
+%\chapter*{Dedicatoria}
 
-\thispagestyle{empty}
-\vspace*{5cm}
-\begin{flushright}
+%\thispagestyle{empty}
+%\vspace*{5cm}
+%\begin{flushright}
 
-\end{flushright}
-\cleardoublepage
+%\end{flushright}
+%\cleardoublepage
 
 % Agradecimientos (OPCIONAL - comentar si no quieres)
-\chapter*{Agradecimientos}
-\addcontentsline{toc}{chapter}{Agradecimientos}
+\begin{agradecementos}
+Gracias a mi familia por el amor y el apoyo incondicional que siempre me habéis dado
+y que me ha ayudado tanto en mi día a día. A vosotros papá y mamá no hay palabras de
+agradecimiento que valgan, Paloma y yo no podemos estar más orgullosos de tener unos 
+padres tan maravillosos, sois nuestro mayor referente y ojalá algún nos podamos llegar
+a parecer a vosotros.
 
 
-% Resumen
-\chapter*{Resumen}
-\addcontentsline{toc}{chapter}{Resumen}
+Gracias a mis compañeros que me han ayudado a disfrutar de esta experiencia,
+en especial a Xaime, en el que he encontrado un amigo para toda la vida y con el que
+he vivido gran parte de estos últimos años. De esta experiencia me llevo recuerdos
+y personas que siempre van a tener un hueco en mi corazón.
 
 
-% Abstract
-\chapter*{Abstract}
-\addcontentsline{toc}{chapter}{Abstract}
+Gracias a mis tutores Laura y Daniel por vuestra ayuda y el gran tiempo dedicado para 
+lograr llevar a cabo la propuesta de este trabajo de fin de grado.
+\end{agradecementos}
 
 
+\input{portada/resumo}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ÍNDICES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

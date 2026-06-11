@@ -133,6 +133,7 @@ ResNet-18~\cite{he2016}, originalmente diseñada para imágenes RGB de 3 canales
 a una entrada de 1 canal.
 
 
+
 %==========================================================================
 \section{Flujo de preprocesamiento}
 \label{sec:flujo_preprocesamiento}
@@ -147,8 +148,8 @@ evidencia de la literatura. Las etapas, en orden de aplicación, son:
     \item Recorte central
     \item Redimensionado a 224$\times$224
     \item CLAHE
-    \item Máscara de atención anatómica (solo plano sagital)
     \item Normalización min-max
+    \item Máscara de atención anatómica (solo plano sagital)
     \item Aumento de datos (solo en entrenamiento)
 \end{enumerate}
 
@@ -238,34 +239,51 @@ mediante un estudio de ablación con análisis de significancia estadística (v�
 el Capítulo~\ref{chap:resultados}), observándose una mejora estadísticamente 
 significativa del AUC ($p = 0{,}003$, test~$t$ pareado).
 
+\subsection{Normalización}
+\label{subsec:normalizacion}
+
+Tras la aplicación de CLAHE, y antes del enmascaramiento anatómico, cada
+volumen se normaliza individualmente al rango $[0, 1]$ mediante normalización
+min-max:
+
+\begin{equation}
+I_{norm} = \frac{I - I_{min}}{I_{max} - I_{min} + \epsilon}
+\end{equation}
+
+donde $\epsilon = 10^{-8}$ evita la división por cero en volúmenes con rango
+de intensidad nulo. La normalización se aplica por volumen (no por corte) para
+preservar las relaciones de intensidad entre cortes adyacentes, que pueden ser
+informativas para la detección de lesiones.
+
 \subsection{Máscara de atención anatómica}
 \label{subsec:mascara}
 
-Se diseña una máscara de atención espacial en forma de gaussiana bidimensional 
-que pondera las regiones de la imagen según su relevancia anatómica para la 
-detección del LCA. La máscara se aplica exclusivamente al plano sagital, donde 
-la localización del LCA es anatómicamente predecible: la región intercondílea, 
-ligeramente por encima del centro vertical de la imagen.
+Una vez normalizado el volumen, se aplica una máscara de atención espacial en
+forma de gaussiana bidimensional que pondera las regiones de la imagen según su
+relevancia anatómica para la detección del LCA. La máscara se aplica
+exclusivamente al plano sagital, donde la localización del LCA es
+anatómicamente predecible: la región intercondílea, ligeramente por encima del
+centro vertical de la imagen.
 
 La máscara se define formalmente como:
 
 \begin{equation}
-M(y, x) = (1 - w_{min}) \cdot \exp\left(-\frac{(y - c_y)^2}{2\sigma_y^2} - 
+M(y, x) = (1 - w_{min}) \cdot \exp\left(-\frac{(y - c_y)^2}{2\sigma_y^2} -
 \frac{(x - c_x)^2}{2\sigma_x^2}\right) + w_{min}
 \label{eq:mascara}
 \end{equation}
 
-donde $(c_y, c_x) = (0{,}40;\; 0{,}50)$ es el centro de la gaussiana en 
-coordenadas normalizadas, $(\sigma_y, \sigma_x) = (0{,}30;\; 0{,}35)$ 
-controlan la dispersión vertical y horizontal, y $w_{min} = 0{,}3$ es el peso 
+donde $(c_y, c_x) = (0{,}40;\; 0{,}50)$ es el centro de la gaussiana en
+coordenadas normalizadas, $(\sigma_y, \sigma_x) = (0{,}30;\; 0{,}35)$
+controlan la dispersión vertical y horizontal, y $w_{min} = 0{,}3$ es el peso
 mínimo aplicado en los bordes de la imagen.
 
-La elección de $c_y = 0{,}40$ (ligeramente por encima del centro vertical) 
-responde a la localización anatómica del LCA en la muesca intercondílea. La 
-dispersión se configura con valores relativamente amplios para evitar un 
-recorte excesivo de la periferia. El peso mínimo $w_{min} = 0{,}3$ garantiza 
-que ninguna región de la imagen queda completamente ignorada, preservando la 
-capacidad del modelo de detectar hallazgos inesperados fuera de la zona de 
+La elección de $c_y = 0{,}40$ (ligeramente por encima del centro vertical)
+responde a la localización anatómica del LCA en la muesca intercondílea. La
+dispersión se configura con valores relativamente amplios para evitar un
+recorte excesivo de la periferia. El peso mínimo $w_{min} = 0{,}3$ garantiza
+que ninguna región de la imagen queda completamente ignorada, preservando la
+capacidad del modelo de detectar hallazgos inesperados fuera de la zona de
 interés principal.
 
 La máscara no se aplica a los planos coronal y axial, ya que la localización
@@ -276,21 +294,6 @@ localización anatómica no coincide con la región intercondílea centrada por
 la máscara. En el plano axial, la localización del LCA presenta mayor
 variabilidad en esta perspectiva, por lo que la aplicación de una máscara
 fija tampoco resulta adecuada.
-
-\subsection{Normalización}
-\label{subsec:normalizacion}
-
-Tras la aplicación de CLAHE y la máscara anatómica, cada volumen se normaliza 
-individualmente al rango $[0, 1]$ mediante normalización min-max:
-
-\begin{equation}
-I_{norm} = \frac{I - I_{min}}{I_{max} - I_{min} + \epsilon}
-\end{equation}
-
-donde $\epsilon = 10^{-8}$ evita la división por cero en volúmenes con rango 
-de intensidad nulo. La normalización se aplica por volumen (no por corte) para 
-preservar las relaciones de intensidad entre cortes adyacentes, que pueden ser 
-informativas para la detección de lesiones.
 
 \subsection{Aumento de datos}
 \label{subsec:augmentation}

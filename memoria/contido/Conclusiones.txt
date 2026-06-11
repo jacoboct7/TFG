@@ -26,18 +26,20 @@ Fase 1 de triaje alcanza un AUC de 0,888 y, con un umbral conservador de
 específica.
 
 En el ámbito del \textbf{preprocesamiento}, la contribución de CLAHE~\cite{pizer1987} se ha
-validado empíricamente mediante un estudio de ablación con análisis
-estadístico: la mejora del AUC de 0,758 a 0,838 es estadísticamente
-significativa ($t = 6{,}567$, $p = 0{,}003$) con un tamaño del efecto muy
-elevado ($d = 2{,}94$)~\cite{cohen1988}. Esta es la decisión de diseño con mayor respaldo
-estadístico de las cuantificadas en el trabajo.
+validado empíricamente mediante análisis estadístico: la comparación entre la
+versión base previa a CLAHE (AUC 0,758) y la configuración final (AUC 0,838)
+es estadísticamente significativa ($t = 6{,}567$, $p = 0{,}003$) con un tamaño
+del efecto muy elevado ($d = 2{,}94$)~\cite{cohen1988}. Aunque este salto
+incorpora también el resto de mejoras del desarrollo iterativo, el incremento
+aislado atribuible a CLAHE (0,758 a 0,793) lo sitúa como una de las decisiones
+de diseño con mayor respaldo estadístico de las cuantificadas en el trabajo.
 
 En el ámbito de la \textbf{arquitectura}, la sustitución del \textit{max pooling}~\cite{bien2018} por
 \textit{attention pooling}~\cite{ilse2018} sobre los cortes del volumen ha
 mostrado una mejora del AUC de 0,793 a 0,838, con un tamaño del efecto
 grande ($d = 1{,}19$), aunque sin alcanzar significancia estadística con los
 cinco \textit{folds} disponibles ($p = 0{,}056$). El módulo de atención,
-con un coste adicional de únicamente 1\,350 parámetros por rama, proporciona
+con un coste adicional de únicamente 257 parámetros por rama, proporciona
 además un mapa de relevancia por corte que sirve como herramienta de
 interpretabilidad. La estrategia de fusión ponderada por plano con pesos
 anatómicamente justificados ha sido validada por el estudio de ablación: el
