@@ -9,54 +9,49 @@ limitaciones identificadas y propone líneas de investigación futura.
 \section{Aportaciones del trabajo}
 \label{sec:aportaciones}
 %==========================================================================
-
-Este trabajo presenta CASCADE, un sistema de detección automática de lesiones
+Este trabajo presenta un sistema de detección automática de lesiones
 del ligamento cruzado anterior en resonancia magnética de rodilla basado en
 aprendizaje profundo. Las aportaciones se agrupan en cuatro ámbitos.
 
 En el ámbito del \textbf{rendimiento predictivo}, el sistema alcanza un AUC
-medio de 0,838 (IC\,95\,\% [0,811; 0,865]) con una sensibilidad del
-84,7\,\% y una especificidad del 64,0\,\% en validación cruzada
-estratificada de 5 \textit{folds}~\cite{kohavi1995} sobre los 1\,250 casos
-del conjunto de datos MRNet. La variabilidad reducida entre \textit{folds} (desviación
-estándar del AUC de 0,022) indica un comportamiento estable del modelo. La
-Fase 1 de triaje alcanza un AUC de 0,888 y, con un umbral conservador de
-0,30, una sensibilidad del 99,0\,\%, lo que permite filtrar con seguridad el
-4,4\,\% de los casos más claramente normales antes de la clasificación
+medio de 0,838 con una sensibilidad del 84,7\,\% en validación cruzada
+estratificada de 5 \textit{folds}~\cite{kohavi1995} sobre los 1\,250 casos del
+conjunto de datos MRNet, con un comportamiento estable entre particiones. La
+fase de triaje complementa la detección como filtro inicial, capaz de descartar
+con seguridad los casos más claramente normales antes de la clasificación
 específica.
 
-En el ámbito del \textbf{preprocesamiento}, la contribución de CLAHE~\cite{pizer1987} se ha
-validado empíricamente mediante análisis estadístico: la comparación entre la
-versión base previa a CLAHE (AUC 0,758) y la configuración final (AUC 0,838)
-es estadísticamente significativa ($t = 6{,}567$, $p = 0{,}003$) con un tamaño
-del efecto muy elevado ($d = 2{,}94$)~\cite{cohen1988}. Aunque este salto
-incorpora también el resto de mejoras del desarrollo iterativo, el incremento
-aislado atribuible a CLAHE (0,758 a 0,793) lo sitúa como una de las decisiones
-de diseño con mayor respaldo estadístico de las cuantificadas en el trabajo.
+En el ámbito del \textbf{preprocesamiento}, la incorporación de
+CLAHE~\cite{pizer1987} es la decisión de diseño con mayor respaldo estadístico
+del trabajo. Su efecto sobre el rendimiento se validó mediante un test pareado
+sobre los cinco \textit{folds}, resultando estadísticamente significativo
+($p = 0{,}003$) y con un tamaño del efecto muy elevado~\cite{cohen1988}. Conviene
+matizar que parte de esa mejora se solapa con el resto de avances del desarrollo
+iterativo, por lo que el efecto aislado de CLAHE es más moderado, si bien sigue
+constituyendo una contribución consistente.
 
-En el ámbito de la \textbf{arquitectura}, la sustitución del \textit{max pooling}~\cite{bien2018} por
-\textit{attention pooling}~\cite{ilse2018} sobre los cortes del volumen ha
-mostrado una mejora del AUC de 0,793 a 0,838, con un tamaño del efecto
-grande ($d = 1{,}19$), aunque sin alcanzar significancia estadística con los
-cinco \textit{folds} disponibles ($p = 0{,}056$). El módulo de atención,
-con un coste adicional de únicamente 257 parámetros por rama, proporciona
-además un mapa de relevancia por corte que sirve como herramienta de
-interpretabilidad. La estrategia de fusión ponderada por plano con pesos
-anatómicamente justificados ha sido validada por el estudio de ablación: el
-plano sagital de forma aislada alcanza un AUC de 0,893, frente al 0,555 del
-plano coronal y el 0,790 del axial, confirmando la asignación diferencial
-de pesos.
+En el ámbito de la \textbf{arquitectura}, la sustitución del \textit{max
+pooling}~\cite{bien2018} por \textit{attention pooling}~\cite{ilse2018} sobre
+los cortes del volumen mejora la capacidad discriminativa del sistema con un
+efecto grande, aunque sin alcanzar significancia estadística debido a la
+potencia limitada de cinco \textit{folds}. Más allá de la métrica, este módulo
+aporta un mapa de relevancia por corte que funciona como herramienta de interpretabilidad.
+La estrategia de fusión ponderada por plano, por su parte, quedó respaldada por el estudio de
+ablación: el plano sagital es el más informativo de forma aislada, pero la
+combinación de los tres planos ofrece el mejor rendimiento global, lo que
+confirma el valor de integrar las distintas vistas.
 
-En el ámbito de la \textbf{interpretabilidad}, se ha demostrado
-empíricamente que el corte de máxima atención difiere del corte central en
-más del 96\,\% de los casos, con desplazamientos medios de 7,0 cortes en
-el plano sagital, 9,7 en el coronal y 7,5 en el axial. Este resultado
-invalida la práctica habitual de aplicar GradCAM~\cite{selvaraju2017} sobre el
-corte central y justifica el enfoque propuesto~\cite{singh2020}. Como validación cualitativa fuera del dominio
-de entrenamiento, el sistema detectó ambas lesiones presentes en un caso
-clínico real (rotura parcial del LCA y lesión meniscal), incluyendo la
-lesión meniscal que no había sido identificada en el informe radiológico
-inicial.
+En el ámbito de la \textbf{interpretabilidad}, la principal aportación es un
+método de explicación fiel a la decisión del modelo: en lugar de aplicar
+GradCAM++ sobre el corte geométricamente central del volumen, como suele
+hacerse, se aplica sobre el corte que el módulo de atención señala como más
+relevante. El análisis confirma que ese corte rara vez coincide con el central,
+por lo que la práctica habitual ofrecería una explicación ajena a la información
+en la que el modelo fundamenta realmente su predicción. Como validación
+cualitativa fuera del dominio de entrenamiento, el sistema detectó además ambas
+lesiones presentes en un caso clínico real (rotura parcial del LCA y lesión
+meniscal), incluida la lesión meniscal que no había sido identificada en el
+informe radiológico inicial.
 
 %==========================================================================
 \section{Cumplimiento de objetivos}
@@ -68,13 +63,13 @@ Capítulo~\ref{chap:introduccion} se han cumplido en los términos siguientes.
 
 El primero, relativo al análisis del conjunto de datos, se abordó mediante
 un estudio exploratorio documentado en el
-Capítulo~\ref{chap:preparacion}, que reveló el marcado desbalance de la
+Capítulo~\ref{chap:preparacion}, que reveló el marcado desbalanceo de la
 etiqueta del LCA (21,0\,\% de positivos, ratio 1:4) y la variabilidad en
 el número de cortes por plano, justificando las decisiones de
 preprocesamiento adoptadas.
 
 El segundo, relativo al diseño e implementación del sistema, se materializó
-en el sistema CASCADE descrito en el Capítulo~\ref{chap:cascade}, que
+en el sistema descrito en el Capítulo~\ref{chap:cascade}, que
 integra dos fases secuenciales, seis modelos ResNet-18~\cite{he2016} con
 \textit{attention pooling} y fusión ponderada en espacio de probabilidades
 con pesos anatómicamente fundamentados.
@@ -110,7 +105,7 @@ evaluación científicamente honesta del sistema.
 La limitación más relevante desde el punto de vista de la validación externa
 es la \textbf{dependencia de un único conjunto de datos} procedente de un
 único centro hospitalario (Stanford University Medical Center) y un único
-protocolo de adquisición. Los estudios de resonancia magnética presentan
+protocolo de adquisición. Los estudios de RM presentan
 una variabilidad considerable entre centros en cuanto a equipamiento,
 parámetros de adquisición y características de contraste. La capacidad del
 sistema para generalizar a otros entornos hospitalarios está respaldada de
@@ -152,42 +147,44 @@ limitación del módulo de atención a tener en cuenta en aplicaciones clínicas
 
 Las limitaciones identificadas apuntan a las siguientes líneas de trabajo
 que podrían ampliar el alcance y la solidez del sistema.
+\begin{itemize}
+    \item \textbf{Validación multicéntrica.} Constituye el paso más relevante
+          para evaluar la capacidad de generalización del sistema. Un estudio
+          sobre datos procedentes de centros con distintos equipos y protocolos
+          de adquisición permitiría cuantificar la degradación del rendimiento
+          debida al cambio de dominio y orientar estrategias de adaptación,
+          como el ajuste fino con un subconjunto de datos del centro destino.
 
-La \textbf{validación multicéntrica} constituye el paso más relevante para
-evaluar la capacidad de generalización del sistema. Un estudio sobre datos
-procedentes de centros con distintos equipos y protocolos de adquisición
-permitiría cuantificar la degradación del rendimiento debida al cambio de
-dominio y orientar estrategias de adaptación, como el ajuste fino con un
-subconjunto de datos del centro destino.
+    \item \textbf{Comparativa directa con radiólogos.} Evaluar el sistema
+          frente a especialistas sobre el mismo conjunto de test proporcionaría
+          una medida clínicamente significativa de su valor añadido y permitiría
+          cuantificar si actuaría como una segunda lectura efectiva en la
+          práctica.
 
-La \textbf{comparativa directa con radiólogos} sobre el mismo conjunto de
-test proporcionaría una medida clínicamente significativa del valor añadido
-del sistema, complementando las métricas absolutas aquí reportadas y
-permitiendo cuantificar si el sistema actuaría como una segunda lectura
-efectiva en la práctica.
+    \item \textbf{Arquitecturas volumétricas nativas.} Las redes convolucionales
+          tridimensionales o los transformadores de visión adaptados al
+          procesamiento volumétrico podrían capturar la continuidad espacial de
+          la lesión en las tres dimensiones sin discretizar el volumen en cortes
+          independientes, eliminando la necesidad del módulo de agregación.
 
-Las \textbf{arquitecturas volumétricas nativas}, como redes convolucionales
-tridimensionales o transformadores de visión adaptados al procesamiento
-volumétrico, podrían capturar la continuidad espacial de la lesión en las
-tres dimensiones sin recurrir a la discretización en cortes independientes,
-eliminando la necesidad del módulo de agregación.
+    \item \textbf{Clasificación de gravedad.} Distinguir el grado de la lesión
+          (rotura parcial frente a completa, grado de afectación meniscal)
+          representaría una extensión natural del sistema con mayor utilidad
+          clínica directa, dado que esa distinción condiciona el planteamiento
+          terapéutico.
 
-La \textbf{clasificación de gravedad} de las lesiones detectadas (rotura
-parcial frente a completa, grado de afectación meniscal) representaría una
-extensión natural del sistema con mayor utilidad clínica directa, dado que
-esta distinción condiciona el planteamiento terapéutico.
+    \item \textbf{Cuantificación de incertidumbre.} Estimar la confianza del
+          sistema en cada predicción, mediante técnicas como
+          \textit{MC-Dropout}~\cite{gal2016} o predicción conformal,
+          enriquecería los reportes clínicos. De los 7 falsos negativos del
+          mejor \textit{fold}, solo 1 recibió una probabilidad muy baja
+          (6,3\,\%), lo que sugiere que la mayoría son casos límite en los que
+          una señal de baja confianza podría alertar al radiólogo.
 
-La \textbf{cuantificación de incertidumbre} por caso, mediante técnicas como
-\textit{MC-Dropout}~\cite{gal2016} o predicción conformal, enriquecería los reportes
-clínicos con un indicador de confianza del sistema en cada predicción
-individual. De los 7 falsos negativos del mejor \textit{fold}, solo 1
-recibió una probabilidad muy baja (6,3\,\%), lo que sugiere que la mayoría
-son casos límite en los que una señal de baja confianza podría alertar al
-radiólogo de la necesidad de un análisis más cuidadoso.
-
-Por último, la \textbf{extensión a otras patologías de rodilla} documentadas
-en el conjunto de datos MRNet, como las lesiones del ligamento cruzado
-posterior o las alteraciones osteocondrales, ampliaría el alcance diagnóstico
-del sistema sin modificar su arquitectura fundamental, dado que la
-arquitectura CASCADE está diseñada para incorporar nuevas tareas de
-clasificación en la Fase 2 de forma modular.
+    \item \textbf{Extensión a otras patologías de rodilla.} Incorporar otras
+          patologías documentadas en el conjunto de datos MRNet, como las
+          lesiones del ligamento cruzado posterior o las alteraciones
+          osteocondrales, ampliaría el alcance diagnóstico sin modificar la
+          arquitectura fundamental del sistema, diseñada para añadir nuevas
+          tareas de clasificación en la Fase 2 de forma modular.
+\end{itemize}

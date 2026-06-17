@@ -18,7 +18,7 @@ intraobservador. Revisiones sistemáticas reportan una sensibilidad del
 87\,\% y una especificidad del 93\,\% para la detección de lesiones del LCA 
 mediante RM~\cite{phelan2016}, lo que implica que aproximadamente un 13\,\% de 
 las lesiones no son detectadas. Otros trabajos documentan tasas de concordancia 
-entre radiólogos que oscilan entre el 75\,\% y el 
+entre personal de radiología que oscilan entre el 75\,\% y el 
 95\,\%~\cite{crawford2007}, evidenciando que incluso especialistas experimentados 
 pueden llegar a conclusiones diferentes ante las mismas imágenes. A esta 
 variabilidad contribuye el desgaste cognitivo acumulado durante la jornada 
@@ -29,14 +29,15 @@ permite reducir esta fatiga al ofrecer una
 segunda lectura objetiva y constante, mejorando no solo la detección directa sino 
 también el rendimiento del propio profesional al final de su jornada.
 
+
 El aprendizaje profundo ha demostrado en los últimos años un rendimiento 
 comparable o superior al de especialistas humanos en múltiples tareas de 
 diagnóstico por imagen~\cite{esteva2017,litjens2017}. En el ámbito de la 
 resonancia magnética de rodilla, Bien et al.~\cite{bien2018} introdujeron en 
 2018 el conjunto de datos MRNet junto con una arquitectura basada en 
-AlexNet~\cite{krizhevsky2012}, preentrenada en ImageNet~\cite{deng2009}, capaz 
-de detectar anomalías generales, lesiones del LCA y desgarros meniscales con un 
-AUC de 0,937, 0,965 y 0,847 respectivamente. Trabajos posteriores como los de 
+AlexNet~\cite{krizhevsky2012}, preentrenada en ImageNet~\cite{deng2009}, capaz
+de detectar anomalías generales, lesiones del LCA y desgarros meniscales con
+resultados prometedores. Trabajos posteriores como los de
 Azcona et al.~\cite{azcona2020} y Panteli et al.~\cite{mdpi2021mrnet} han 
 explorado arquitecturas más complejas y enfoques progresivos sobre el mismo 
 conjunto de datos. Sin embargo, la mayoría de estos sistemas comparten dos 
@@ -75,7 +76,8 @@ pueden aportar objetividad y reproducibilidad al entorno clínico.
 %\subsection{Objetivo general}
 %label{subsec:objetivo_general}
 
-Diseñar, implementar y evaluar un sistema de aprendizaje profundo multiplano 
+El objetivo principal de este trabajo es diseñar, implementar y evaluar un 
+sistema de aprendizaje profundo multiplano 
 capaz de procesar volúmenes de resonancia magnética de rodilla para la detección 
 de lesiones del ligamento cruzado anterior, proporcionando predicciones 
 interpretables y priorizando la detección de lesiones reales mediante la 
@@ -126,40 +128,6 @@ ilustra cualitativamente en el caso clínico personal del
 Capítulo~\ref{chap:resultados}, pero no se reportan métricas de validación
 cruzada para esta tarea.
 
-% Eliminar?
-%==========================================================================
-\section{Enfoque del trabajo}
-\label{sec:enfoque}
-%==========================================================================
-
-El sistema propuesto se estructura en una arquitectura CASCADE de dos fases que 
-refleja el flujo clínico real: una primera fase de triaje que detecta anomalías 
-generales, y una segunda fase de clasificación específica de lesiones del LCA y 
-meniscales con fusión ponderada de los tres planos anatómicos.
-
-El flujo de preprocesamiento incorpora CLAHE~\cite{pizer1987} para el realce de 
-contraste local y una máscara de atención anatómica gaussiana sobre el plano 
-sagital, donde el LCA se visualiza en su trayecto completo desde la inserción 
-femoral hasta la tibial. Como \textit{backbone} se emplea 
-ResNet-18~\cite{he2016}, seleccionada tras evaluar alternativas como ResNet-50 y 
-EfficientNet-B0~\cite{tan2019} que excedían las limitaciones computacionales del 
-entorno. La agregación de cortes se realiza mediante \textit{attention 
-pooling}~\cite{ilse2018}, superando la limitación del \textit{max 
-pooling}~\cite{bien2018} de depender de un único corte.
-
-La interpretabilidad se aborda mediante GradCAM++~\cite{chattopadhay2018} 
-aplicado sobre los cortes que el modelo realmente utiliza para su predicción, y 
-mediante reportes clínicos estructurados con niveles de sospecha y análisis por 
-plano. El diseño prioriza la utilidad clínica: se emplea un umbral de decisión 
-optimizado para sensibilidad y se evalúa mediante validación cruzada 
-estratificada de 5 \textit{folds}~\cite{kohavi1995}.
-
-El desarrollo sigue un enfoque iterativo en el que cada versión del sistema se 
-construye sobre la anterior, diagnosticando las limitaciones observadas y 
-proponiendo soluciones específicas. Este proceso, que parte de un modelo inicial 
-con una sensibilidad del 42,8\,\% y un AUC de 0,758 y evoluciona hasta un 
-sistema con un AUC de 0,838 y una sensibilidad del 84{,}7\,\%, se documenta 
-íntegramente en el Capítulo~\ref{chap:cascade}.
 
 %==========================================================================
 \section{Planificación y costes}
@@ -167,10 +135,6 @@ sistema con un AUC de 0,838 y una sensibilidad del 84{,}7\,\%, se documenta
 %==========================================================================
 A continuación se presenta la planificación temporal del proyecto y una 
 estimación de los costes asociados.
-
-\subsection{Fases del proyecto}
-\label{subsec:fases}
-
 
 El desarrollo del proyecto se estructura en cinco fases, solapadas en el 
 tiempo según la naturaleza iterativa del trabajo. Su distribución temporal 
@@ -244,10 +208,7 @@ se muestra en la Figura~\ref{fig:gantt}:
 \label{fig:gantt}
 \end{figure}
 
-\subsection{Estimación de costes}
-\label{subsec:costes}
-
-El cuadro~\ref{tab:costes} recoge la estimación de los costes asociados al 
+Por su parte, el Cuadro~\ref{tab:costes} recoge la estimación de los costes asociados al 
 proyecto. Los salarios se estiman a partir de datos del mercado laboral español 
 para perfiles tecnológicos junior y docentes universitarios~\cite{manfred2026}.
 
@@ -278,14 +239,14 @@ Personal  & Tutor                     & 40\,h                           & 1\,384
 \label{sec:herramientas}
 %==========================================================================
 En esta sección se describen las principales herramientas de software y el 
-entorno de ejecución empleados durante el desarrollo del proyecto.
+entorno de ejecución empleados durante el desarrollo del proyecto. 
 
 El desarrollo del sistema se realiza íntegramente en Python, empleando las 
 siguientes herramientas principales:
 
 \begin{itemize}
     \item \textbf{PyTorch}~\cite{paszke2019}: entorno de aprendizaje profundo 
-          utilizado para la implementación y entrenamiento del modelo CASCADE.
+          utilizado para la implementación y entrenamiento del modelo propuesto.
     \item \textbf{OpenCV}~\cite{bradski2000}: biblioteca de visión por computador 
           empleada para el preprocesamiento de imagen (CLAHE, redimensionado, 
           rotaciones).
@@ -320,8 +281,8 @@ El resto de la presente memoria académica se estructura y organiza de la siguie
           Detalla el análisis exploratorio del conjunto de datos y el flujo de 
           preprocesamiento, incluyendo CLAHE y la máscara de atención anatómica.
     
-    \item \textbf{Capítulo~\ref{chap:cascade}: Metodología CASCADE.} Describe 
-          el diseño del sistema en cascada, las decisiones arquitectónicas y la 
+    \item \textbf{Capítulo~\ref{chap:cascade}: Metodología.} Describe
+          el diseño del sistema en cascada, las decisiones arquitectónicas y la
           evolución iterativa del modelo.
     
     \item \textbf{Capítulo~\ref{chap:resultados}: Resultados.} Presenta los 

@@ -1,15 +1,68 @@
 \chapter{Resultados}
 \label{chap:resultados}
 
-\lettrine{E}{ste} capítulo presenta los resultados experimentales del sistema
-CASCADE. Se exponen, en primer lugar, los resultados de la validación cruzada
-para la detección de lesiones del LCA, incluyendo el análisis de las curvas de
-entrenamiento, y la evaluación de la fase de triaje. A continuación, se analiza
-la contribución de cada plano anatómico y se valida estadísticamente el impacto
-de las principales decisiones de diseño, entre ellas el preprocesamiento con
-CLAHE, el módulo de \textit{attention pooling} y el aumento de datos. Por
-último, se aborda la interpretabilidad del modelo mediante mapas de activación,
-el análisis de errores y la aplicación del sistema a un caso clínico real.
+
+\lettrine{E}{ste} capítulo presenta la evaluación experimental del sistema en
+su configuración final, resultado de un proceso de diseño iterativo descrito en
+el Capítulo~\ref{chap:cascade}. La evaluación emplea las métricas definidas en
+la Sección~\ref{sec:metricas} (sensibilidad, especificidad, F1 y AUC) y la
+estrategia de validación cruzada estratificada de 5 \textit{folds} allí
+detallada.
+
+La exposición sigue un hilo que parte de lo general y avanza hacia lo
+específico. En primer lugar se sintetiza la evolución del sistema durante su
+desarrollo, para situar la configuración final que se evalúa. A continuación se
+presenta su rendimiento global, a partir de los resultados de la validación
+cruzada y de la evaluación de la fase de triaje. Una vez establecido ese
+rendimiento, se profundiza en sus causas mediante el análisis de la contribución
+de cada plano anatómico y la validación estadística de las principales
+decisiones de diseño. Por último se examinan los aspectos orientados a la
+aplicación clínica del sistema, como su interpretabilidad, el análisis de
+errores, los reportes que genera, su eficiencia computacional y su aplicación a
+un caso clínico real. El capítulo se cierra con una síntesis de los resultados.
+
+%==========================================================================
+\section{Evolución del sistema}
+\label{sec:evolucion}
+%==========================================================================
+
+El sistema final es el resultado de un proceso de desarrollo incremental en el
+que cada decisión de diseño se incorporó para corregir una limitación observada
+en la configuración anterior. El Cuadro~\ref{tab:evolucion} resume esta
+progresión en términos de AUC medio de validación cruzada.
+
+\begin{table}[htb]
+\centering
+\caption{Evolución del AUC medio (validación cruzada de 5 \textit{folds}) a
+través de las principales decisiones de diseño que afectan al poder
+discriminativo del sistema.}
+\label{tab:evolucion}
+\rowcolors{2}{white}{udcgray!25}
+\begin{tabular}{lc}
+\rowcolor{udcpink!25}
+\textbf{Configuración} & \textbf{AUC} \\\hline
+Base (\textit{max pooling}, 128$\times$128) & 0,758 \\
+\quad + CLAHE                               & 0,793 \\
+\quad + \textit{attention pooling}          & 0,819 \\
+\quad + Resolución 224$\times$224 (final)   & 0,838 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Partiendo de una configuración base que agregaba los cortes mediante
+\textit{max pooling} a baja resolución (AUC en torno a 0,758), el realce de
+contraste con CLAHE elevó el AUC hasta 0,793; la sustitución del \textit{max
+pooling} por \textit{attention pooling} lo aumentó hasta 0,819; y el incremento
+progresivo de la resolución de entrada, hasta 224$\times$224 píxeles, lo situó
+en el valor final de 0,838. Otras decisiones no perseguían incrementar el AUC,
+sino mejorar la sensibilidad y la robustez del sistema: la selección del umbral
+clínico desde el conjunto de validación se orientó a garantizar una sensibilidad
+mínima, y la incorporación de \textit{Dropout} a mitigar el sobreajuste; su efecto sobre
+el AUC se mantiene dentro de la variabilidad entre ejecuciones (del orden de
+$\pm 0{,}01$). La contribución individual de las decisiones que sí impulsan el
+poder discriminativo se valida estadísticamente en la
+Sección~\ref{sec:analisis_estadistico}.
+
 
 %==========================================================================
 \section{Resultados de la validación cruzada}
@@ -17,11 +70,11 @@ el análisis de errores y la aplicación del sistema a un caso clínico real.
 %==========================================================================
 
 El sistema se evaluó mediante validación cruzada estratificada de 5
-\textit{folds}~\cite{kohavi1995} sobre los 1\,250 casos del conjunto de datos MRNet. El cuadro~\ref{tab:resultados_cv} recoge las métricas obtenidas en cada 
+\textit{folds}~\cite{kohavi1995} sobre los 1\,250 casos del conjunto de datos MRNet. El Cuadro~\ref{tab:resultados_cv} recoge las métricas obtenidas en cada 
 \textit{fold} para la detección de lesiones del LCA, junto con el umbral 
 clínico seleccionado de forma independiente en cada uno.
 
-\begin{table}[H]
+\begin{table}[htb]
 \centering
 \caption{Resultados de la validación cruzada de 5 \textit{folds} para la 
 detección de lesiones del LCA.}
@@ -59,24 +112,35 @@ conjunto de validación reducido (42 casos positivos), pequeñas variaciones en 
 distribución de probabilidades predichas se traducen en umbrales diferentes y, 
 en consecuencia, en distintos niveles de especificidad.
 
-La Figura~\ref{fig:roc} muestra la curva ROC del mejor \textit{fold} 
-(\textit{fold} 4, AUC 0,870) con el punto operativo correspondiente al umbral 
-clínico seleccionado.
+La Figura~\ref{fig:roc} presenta las curvas ROC de los cinco \textit{folds}
+junto con la curva media que resume el comportamiento global del sistema. Las
+cinco curvas se mantienen próximas entre sí y claramente separadas de la
+diagonal de no discriminación, lo que confirma un poder discriminativo
+consistente a lo largo de las particiones y respalda la reducida desviación
+estándar del AUC señalada anteriormente. Sobre la curva media se resalta el
+punto operativo que fija el umbral clínico. Su ubicación en la zona de alta
+sensibilidad de la curva ilustra de forma gráfica el compromiso adoptado por el
+sistema, que prioriza la detección de lesiones (sensibilidad $\geq$ 85\,\%) a
+costa de una especificidad más moderada, en coherencia con la asimetría clínica
+descrita en la Sección~\ref{sec:umbral}.
 
-\begin{figure}[H]
+\begin{figure}[htb]
 \centering
 \includegraphics[width=0.7\textwidth]{imaxes/roc_curve.png}
-\caption{Curva ROC del \textit{fold} con mejor rendimiento (AUC 0,870). El punto
-destacado indica el punto operativo correspondiente al umbral clínico
+\caption{Curvas ROC obtenidas en los cinco \textit{folds} de la validación
+cruzada. La curva azul representa el comportamiento medio del sistema (AUC
+0,838) y el punto destacado corresponde al punto operativo del umbral clínico
 seleccionado (sensibilidad $\geq$ 85\,\%).}
 \label{fig:roc}
 \end{figure}
 
-La Figura~\ref{fig:training_curves} muestra las curvas de pérdida de
-entrenamiento y validación para los cinco \textit{folds}. En todos ellos se
-observa un patrón coherente: la pérdida de entrenamiento desciende de forma
-progresiva a lo largo de las épocas, indicando que el modelo aprende de los
-datos de forma efectiva. La pérdida de validación, en cambio, presenta una
+La Figura~\ref{fig:training_curves} muestra, en un panel independiente para
+cada uno de los cinco \textit{folds}, las curvas de pérdida de entrenamiento y
+validación. Presentarlas por separado permite apreciar el comportamiento del
+entrenamiento en cada partición, donde se observa un patrón coherente entre
+todas ellas: la pérdida de entrenamiento desciende de forma progresiva a lo
+largo de las épocas, indicando que el modelo aprende de los datos de forma
+efectiva. La pérdida de validación, en cambio, presenta una
 trayectoria irregular con picos pronunciados, comportamiento esperable dado el
 reducido tamaño del conjunto de validación (aproximadamente 42 casos positivos
 sobre un total de 200) y el desequilibrio de clases inherente al conjunto de
@@ -86,14 +150,23 @@ refleja que el modelo alcanza rápidamente su punto óptimo en el conjunto de
 validación: continuar el entrenamiento más allá no reduciría la pérdida de
 validación sino que introduciría sobreajuste.
 
-\begin{figure}[H]
+\begin{figure}[htb]
 \centering
-\includegraphics[width=\textwidth]{imaxes/training_curves_all_folds.png}
+\subfigure[\textit{Fold} 1]{\includegraphics[width=0.49\textwidth]{imaxes/training_curves_fold1.png}}
+\hfill
+\subfigure[\textit{Fold} 2]{\includegraphics[width=0.49\textwidth]{imaxes/training_curves_fold2.png}}
+
+\vspace{0.4em}
+\subfigure[\textit{Fold} 3]{\includegraphics[width=0.49\textwidth]{imaxes/training_curves_fold3.png}}
+\hfill
+\subfigure[\textit{Fold} 4]{\includegraphics[width=0.49\textwidth]{imaxes/training_curves_fold4.png}}
+
+\vspace{0.4em}
+\subfigure[\textit{Fold} 5]{\includegraphics[width=0.49\textwidth]{imaxes/training_curves_fold5.png}}
 \caption{Curvas de pérdida de entrenamiento (línea continua) y validación
-(línea discontinua) para los cinco \textit{folds}. La pérdida de entrenamiento
-desciende progresivamente, mientras que la de validación presenta variabilidad
-debida al tamaño reducido del conjunto de validación. Los marcadores verticales
-indican el punto de detención temprana.}
+(línea discontinua) para cada uno de los cinco \textit{folds} de la validación
+cruzada, en paneles independientes. Los marcadores verticales indican el punto
+de detención temprana de cada \textit{fold}.}
 \label{fig:training_curves}
 \end{figure}
 
@@ -103,10 +176,10 @@ indican el punto de detención temprana.}
 %==========================================================================
 
 La Fase 1 del sistema, encargada de la detección de anomalías generales, se 
-evaluó de forma independiente sobre los mismos \textit{folds}.El 
-cuadro~\ref{tab:fase1} recoge los resultados obtenidos.
+evaluó de forma independiente sobre los mismos \textit{folds}. El 
+Cuadro~\ref{tab:fase1} recoge los resultados obtenidos.
 
-\begin{table}[H]
+\begin{table}[htb]
 \centering
 \caption{Resultados de la Fase 1 (detección de anomalías) por \textit{fold}.}
 \label{tab:fase1}
@@ -127,54 +200,83 @@ cuadro~\ref{tab:fase1} recoge los resultados obtenidos.
 La Fase 1 alcanza un AUC medio de 0,888, superior al de la Fase 2, lo que es 
 esperable dado que la detección de anomalías generales es una tarea menos 
 específica que la clasificación de lesiones del LCA. Esta fase cumple su doble 
-función de triaje e interpretabilidad: configurando un umbral de triaje 
-conservador de 0,30, la Fase 1 alcanza una sensibilidad del 99,0\,\% para la 
-detección de anomalías, lo que permite filtrar con seguridad el 4,4\,\% de los 
-casos más claramente normales antes de la clasificación específica, reduciendo 
-la carga computacional sin comprometer la detección de casos patológicos.
+función de triaje e interpretabilidad: configurando un umbral de triaje
+conservador de 0,30, la Fase 1 alcanza una sensibilidad del 99,0\,\% para la
+detección de anomalías. Este punto de operación permitiría descartar en una
+etapa previa una pequeña fracción de los casos más claramente normales (en
+torno al 4,4\,\%), reduciendo la carga computacional de la clasificación
+específica.
 
 %==========================================================================
 \section{Contribución de cada plano anatómico}
 \label{sec:ablacion_plano}
 %==========================================================================
 
-Para validar la estrategia de fusión ponderada, se realizó un estudio de 
-ablación evaluando el rendimiento del sistema utilizando cada plano de forma 
-aislada y distintas combinaciones. El cuadro~\ref{tab:ablacion_plano} recoge los 
-resultados sobre el mejor \textit{fold}.
+Para analizar la contribución de cada plano anatómico y fundamentar la
+asignación de pesos, se evaluó el rendimiento del sistema utilizando cada plano
+de forma aislada y distintas combinaciones. El Cuadro~\ref{tab:ablacion_plano}
+recoge los valores medios obtenidos en la validación cruzada de 5
+\textit{folds}. Las filas combinadas emplean el esquema de fusión ponderada del
+sistema: la combinación sagital+coronal con pesos 0,6 y 0,4, la sagital+axial
+con 0,85 y 0,15, y la configuración completa con 0,55 (sagital), 0,35 (coronal)
+y 0,10 (axial). Los valores de sensibilidad y especificidad se calculan al
+umbral clínico, por lo que el AUC, independiente del umbral, es la métrica más
+adecuada para la comparación.
 
-\begin{table}[H]
+\begin{table}[htb]
 \centering
-\caption{Ablación por plano anatómico para la detección de lesiones del LCA.}
+\caption{Ablación por plano anatómico para la detección de lesiones del LCA
+(valores medios de la validación cruzada de 5 \textit{folds}). Las columnas
+Sens y Espec se calculan al umbral clínico.}
 \label{tab:ablacion_plano}
 \rowcolors{2}{white}{udcgray!25}
 \begin{tabular}{lrrrr}
 \rowcolor{udcpink!25}
 \textbf{Configuración} & \textbf{Sens (\%)} & \textbf{Espec (\%)} &
 \textbf{F1} & \textbf{AUC} \\\hline
-Solo sagital       & 86,8 & 77,7 & 0,643 & 0,893 \\
-Solo coronal       & 58,5 & 58,9 & 0,376 & 0,555 \\
-Solo axial         & 62,3 & 83,2 & 0,555 & 0,790 \\
-Sagital + coronal  & 86,8 & 67,5 & 0,564 & 0,863 \\
-Completo (S+C+A)   & 86,8 & 70,6 & 0,586 & 0,870 \\
+Solo sagital       & 77,1 & 72,5 & 0,558 & 0,830 \\
+Solo coronal       & 64,8 & 57,5 & 0,396 & 0,643 \\
+Solo axial         & 72,1 & 63,1 & 0,473 & 0,743 \\
+Sagital + coronal  & 83,6 & 64,4 & 0,531 & 0,831 \\
+Sagital + axial    & 78,7 & 71,4 & 0,560 & 0,829 \\
+Completo (S+C+A)   & 84,7 & 64,0 & 0,533 & 0,838 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Los resultados confirman de forma contundente la evidencia radiológica que 
-fundamenta la asignación de pesos. El plano sagital de forma aislada alcanza un 
-AUC de 0,893, muy superior al coronal (0,555, apenas mejor que el azar) y al 
-axial (0,790). Este resultado valida la decisión de asignar el mayor peso al 
-plano sagital (0,55) en la fusión para la detección del LCA, en consonancia con 
-el hecho de que el ligamento cruzado anterior se visualiza en su trayecto 
+Entre los planos individuales, el sagital es el más informativo para la
+detección del LCA, con un AUC medio de 0,830, por delante del axial (0,743) y
+del coronal (0,643), este último el menos discriminativo de forma aislada. Este
+orden respalda que el plano sagital reciba el mayor peso de fusión (0,55), en
+consonancia con que el ligamento cruzado anterior se visualiza en su trayecto
 completo en esta vista.
 
-Resulta notable que el plano coronal, de forma aislada, apenas supere el azar 
-para la detección del LCA, lo que es coherente con su escasa utilidad 
-radiológica para esta estructura concreta. Su contribución al sistema se 
-justifica por su relevancia para las lesiones meniscales, no para el LCA. El 
-plano axial, aunque tampoco es óptimo para el LCA, aporta una especificidad 
-elevada (83,2\,\%) que complementa al sagital.
+La combinación de planos mejora el rendimiento respecto a cualquier vista
+aislada. Añadir un segundo plano al sagital incrementa de forma apreciable la
+sensibilidad, que alcanza el 83,6\,\% en la configuración sagital+coronal,
+manteniendo un AUC comparable; y la fusión de los tres planos obtiene los
+mejores valores de toda la tabla, con un AUC medio de 0,838 y una sensibilidad
+del 84,7\,\%. Dado que la sensibilidad es la métrica prioritaria del sistema,
+este resultado justifica empíricamente la decisión de fusionar las tres vistas
+en lugar de basar la detección en el plano sagital por sí solo.
+
+Merece una mención el papel del plano coronal. Pese a ser el menos informativo
+de forma aislada para el LCA, recibe en la fusión un peso (0,35) superior al del
+axial (0,10). Esta asignación responde a dos motivos. Por un lado, su aportación
+en combinación es positiva: la fusión sagital+coronal, en la que el coronal
+recibe un peso considerable (0,4), iguala en AUC a la sagital+axial y
+proporciona la mayor sensibilidad entre las configuraciones de dos planos. 
+Por otro, las tres ramas comparten arquitectura con la detección de
+lesiones meniscales, tarea para la cual el plano coronal es la vista más
+informativa, por lo que su contribución resulta imprescindible para el sistema
+en su conjunto.
+
+La fusión completa sacrifica algo de especificidad (64,0\,\%) y de F1 frente a
+las configuraciones con mayor peso del sagital o del axial, que alcanzan
+especificidades en torno al 72\,\%. Este compromiso es coherente con la prioridad
+clínica del sistema, que antepone la detección de lesiones a la reducción de
+falsas alarmas. En conjunto, la ablación respalda tanto la estrategia de fusión
+ponderada como el orden de magnitud de los pesos asignados a cada plano.
 
 %==========================================================================
 \section{Análisis estadístico}
@@ -186,11 +288,11 @@ métricas y validar el impacto de las principales decisiones de diseño.
 
 \subsection{Intervalos de confianza}
 
-El cuadro~\ref{tab:ic} recoge los intervalos de confianza al 95\,\% de las 
+El Cuadro~\ref{tab:ic} recoge los intervalos de confianza al 95\,\% de las 
 métricas principales, calculados a partir de los resultados de los cinco 
 \textit{folds}.
 
-\begin{table}[H]
+\begin{table}[htb]
 \centering
 \caption{Intervalos de confianza al 95\,\% de las métricas principales.}
 \label{tab:ic}
@@ -215,27 +317,32 @@ Para cuantificar la contribución de CLAHE~\cite{pizer1987} se comparó una
 versión temprana del sistema sin esta técnica de preprocesamiento (AUC 0,758)
 con la configuración final que la incorpora (AUC 0,838). Conviene precisar que
 ambas versiones difieren también en otras mejoras introducidas durante el
-desarrollo iterativo —en particular el mecanismo de \textit{attention pooling}
-y el aumento de la resolución espacial—, por lo que esta comparación refleja el
+desarrollo iterativo (en particular el mecanismo de \textit{attention pooling}
+y el aumento de la resolución espacial), por lo que esta comparación refleja el
 efecto acumulado de dichos cambios respecto a la línea base previa a CLAHE. El
 incremento atribuible de forma aislada a CLAHE, evaluado entre dos versiones
 consecutivas que únicamente difieren en su aplicación, es de 0,758 a 0,793. Un
 test $t$ pareado sobre los cinco \textit{folds} entre la versión base y la
 final confirma que la mejora es estadísticamente significativa ($t = 6{,}567$,
 $p = 0{,}003$), con un tamaño del efecto de Cohen muy elevado
-($d = 2{,}94$)~\cite{cohen1988}. Este resultado valida empíricamente la
+($d = 2{,}94$; por convención, un valor $d > 0{,}8$ se considera un efecto
+grande)~\cite{cohen1988}. Este resultado valida empíricamente la
 decisión de incorporar CLAHE al flujo de preprocesamiento.
 
 \subsection{Impacto del \textit{attention pooling}}
 
-De forma análoga, se comparó el \textit{attention pooling}~\cite{ilse2018} con el
-\textit{max pooling}~\cite{bien2018} empleado en versiones anteriores. El \textit{attention pooling} mejora 
-el AUC de 0,793 a 0,838, con un tamaño del efecto grande ($d = 1{,}19$). No 
-obstante, esta mejora no alcanza significancia estadística ($t = 2{,}659$, 
-$p = 0{,}056$). Conviene señalar que, con únicamente cinco \textit{folds}, la 
-potencia estadística es limitada: un resultado no significativo no implica 
-ausencia de efecto, sino insuficiencia de datos para demostrarlo con el nivel 
-de confianza establecido. El elevado tamaño del efecto y la ventaja añadida en
+De forma análoga, se comparó el \textit{attention pooling}~\cite{ilse2018} con
+el \textit{max pooling}~\cite{bien2018} empleado en la versión base. Al igual
+que en el caso de CLAHE, esta comparación entre la versión base (AUC 0,793) y la
+configuración final (0,838) incorpora también el aumento posterior de la
+resolución; el incremento atribuible de forma aislada al \textit{attention
+pooling} es de 0,793 a 0,819. El test $t$ pareado sobre los cinco \textit{folds}
+entre ambas versiones arroja un tamaño del efecto grande ($d = 1{,}19$), si bien
+la mejora no alcanza significancia estadística ($t = 2{,}659$, $p = 0{,}056$).
+Conviene señalar que, con únicamente cinco \textit{folds}, la potencia
+estadística es limitada: un resultado no significativo no implica ausencia de
+efecto, sino insuficiencia de datos para demostrarlo con el nivel de confianza
+establecido. El elevado tamaño del efecto y la ventaja añadida en
 interpretabilidad justifican la adopción del \textit{attention pooling}.
 
 \subsection{Impacto del aumento de datos}
@@ -247,7 +354,7 @@ dos modelos idénticos en arquitectura e hiperparámetros, uno con aumento de
 datos activado y otro sin él, y se evaluaron sobre el mismo conjunto de test.
 El Cuadro~\ref{tab:ablacion} recoge los resultados.
 
-\begin{table}[H]
+\begin{table}[htb]
 \centering
 \caption{Ablación del aumento de datos (\textit{fold}~1). Sens:
 sensibilidad; Espec: especificidad; F1: puntuación F1; AUC: área bajo la
@@ -276,7 +383,7 @@ de 1,9 puntos, lo que apoya su función como mecanismo de regularización.
 %==========================================================================
 
 La interpretabilidad de los modelos de aprendizaje profundo es un requisito
-fundamental para su adopción clínica~\cite{singh2020}: el radiólogo necesita
+fundamental para su adopción clínica~\cite{singh2020}, ya que el personal de radiología necesita
 comprender qué regiones y cortes del estudio de RM sustentan la predicción del
 sistema para poder validarla con su propio criterio diagnóstico. Esta sección
 presenta dos aspectos complementarios de la interpretabilidad del sistema: la
@@ -290,9 +397,9 @@ Una de las contribuciones del trabajo es la aplicación de
 GradCAM++~\cite{chattopadhay2018} sobre el corte que el modelo realmente
 utiliza para su predicción, en lugar del corte geométricamente central. Para cuantificar la relevancia de esta decisión, se 
 analizó la distancia entre el corte de máxima atención y el corte central del 
-volumen. El cuadro~\ref{tab:offset} recoge los resultados.
+volumen. El Cuadro~\ref{tab:offset} recoge los resultados.
 
-\begin{table}[H]
+\begin{table}[htb]
 \centering
 \caption{Distancia entre el corte de máxima atención y el corte central.}
 \label{tab:offset}
@@ -325,9 +432,9 @@ se concentran en la zona intercondílea, donde se localiza el ligamento cruzado
 anterior, lo que indica que el modelo fundamenta su predicción en la región
 anatómicamente relevante y no en artefactos periféricos del volumen.
 
-\begin{figure}[H]
+\begin{figure}[htb]
 \centering
-\includegraphics[width=0.9\textwidth]{imaxes/gradcam_TN_0016.png}
+\includegraphics[width=1\textwidth]{imaxes/gradcam_TN_0016.png}
 \caption{Mapas de GradCAM++ sobre el corte de máxima atención de cada plano
 anatómico para un caso del conjunto de test. Columna izquierda: corte original
 en escala de grises. Columna derecha: mapa de activación superpuesto. Las
@@ -367,18 +474,18 @@ un falso negativo.
 \label{sec:resultados_reportes}
 %==========================================================================
 
-El sistema genera reportes clínicos estructurados que integran las dos fases del 
-CASCADE. Cada reporte incluye el resultado del triaje (Fase 1), la probabilidad 
+El sistema genera reportes clínicos estructurados que integran las dos fases.
+Cada reporte incluye el resultado del triaje (Fase 1), la probabilidad
 de lesión del LCA con su nivel de sospecha (Fase 2), el análisis desglosado por 
 plano con el corte más relevante de cada vista, y una medida de concordancia 
 entre planos. Esta estructura está orientada a facilitar la integración del 
-sistema en un flujo de trabajo clínico, proporcionando al radiólogo no solo una 
+sistema en un flujo de trabajo clínico, proporcionando al personal de radiología no solo una 
 predicción sino también el contexto que la fundamenta.
 
 Los niveles de sospecha se definen en función de la probabilidad predicha: muy 
 bajo, bajo, moderado, alto o muy alto. El reporte incluye además una advertencia 
 explícita de que el sistema es una herramienta de asistencia que no sustituye 
-el criterio del radiólogo.
+el criterio del personal de radiología.
 
 %==========================================================================
 \section{Eficiencia computacional}
@@ -387,9 +494,9 @@ el criterio del radiólogo.
 
 El entrenamiento completo del sistema (cinco \textit{folds}, ambas fases) 
 requiere aproximadamente 8 horas y 40 minutos en una GPU Tesla T4. La inferencia 
-sobre un caso individual se realiza en 0,08 segundos, un tiempo compatible con 
-un flujo de trabajo clínico en tiempo real. El consumo energético estimado por 
-ejecución completa es de 0,61~kWh (Tesla T4 a 70~W durante 8,65 horas).
+sobre un caso individual se realiza en 0,08 segundos, un tiempo que no supondría
+una limitación para su integración en un flujo de trabajo clínico. El consumo
+energético estimado por ejecución completa es de 0,61~kWh (Tesla T4 a 70~W durante 8,65 horas).
 
 %==========================================================================
 \section{Caso de estudio: aplicación a un caso clínico real}
@@ -407,19 +514,24 @@ desapercibida en el análisis inicial. Esta experiencia personal, descrita con
 más detalle en la motivación del Capítulo~\ref{chap:introduccion}, es la que
 originó el interés por desarrollar este proyecto.
 
-La adquisición se realizó con secuencia PD con supresión grasa (PD-FS),
-distinta de las secuencias del conjunto de entrenamiento, lo que introduce una
+La adquisición se realizó con una secuencia potenciada en densidad protónica
+con supresión grasa (PD-FS, del inglés \textit{proton density fat-suppressed}).
+Se trata de una secuencia de uso habitual en resonancia musculoesquelética y
+especialmente sensible a las lesiones de meniscos, ligamentos y cartílago, ya
+que la supresión de la señal de la grasa realza el contraste de las estructuras
+con alto contenido en agua y de las zonas de edema. Esta secuencia es distinta
+de las empleadas en el conjunto de entrenamiento, lo que introduce una
 diferencia de dominio que pone a prueba la capacidad de generalización del
-sistema. Aplicar CASCADE sobre este caso permite evaluar si el modelo es capaz
+sistema. Aplicar el sistema sobre este caso permite evaluar si el modelo es capaz
 de detectar lesiones reales en condiciones de adquisición distintas a las del
 entrenamiento.
 
 El Cuadro~\ref{tab:caso_personal} recoge los resultados del sistema sobre este
 caso, empleando el modelo del mejor \textit{fold}.
 
-\begin{table}[H]
+\begin{table}[htb]
 \centering
-\caption{Resultados del sistema CASCADE sobre el caso clínico personal.}
+\caption{Resultados del sistema sobre el caso clínico personal.}
 \label{tab:caso_personal}
 \rowcolors{2}{white}{udcgray!25}
 \begin{tabular}{lrl}
@@ -444,8 +556,8 @@ pesos de fusión asignados.
 
 Cabe señalar que en el plano coronal el corte de máxima atención se situó en
 el primer corte del volumen, lo que sugiere una posible influencia del
-rellenado de bordes en este plano. Esta limitación, descrita también en las
-conclusiones del trabajo, no afectó al resultado final gracias al bajo peso
+rellenado de bordes en este plano. Esta limitación
+no afectó al resultado final gracias al bajo peso
 asignado al plano coronal en la fusión para el LCA (0,35).
 
 La Figura~\ref{fig:gradcam_personal} muestra los mapas de GradCAM++ generados
@@ -455,10 +567,10 @@ medial, zona anatómica donde se insertan las fibras del ligamento cruzado
 anterior, coherente con una probabilidad de 0,998. El plano axial exhibe
 igualmente activaciones en la región central de la articulación. Este patrón
 de activación, obtenido sobre una secuencia PD-FS procedente de un centro
-externo, refuerza la capacidad de generalización del sistema más allá del
-dominio de entrenamiento.
+externo, sugiere una capacidad de generalización del sistema más allá del
+dominio de entrenamiento, si bien sobre la base de un único caso.
 
-\begin{figure}[H]
+\begin{figure}[htb]
 \centering
 \includegraphics[width=0.9\textwidth]{imaxes/caso_personal_gradcam.png}
 \caption{Mapas de GradCAM++ sobre el corte de máxima atención de cada plano
@@ -477,47 +589,76 @@ la lesión que no había sido identificada inicialmente.
 
 \subsection{Ejemplo de reporte clínico generado}
 
-El sistema CASCADE genera reportes clínicos estructurados que integran los
+El sistema genera reportes clínicos estructurados que integran los
 resultados de ambas fases. La Figura~\ref{fig:reporte_ejemplo} reproduce el
 reporte generado para el caso personal, tal y como se presentaría al
 radiólogo: incluye el resultado del triaje, las probabilidades por patología
 con su nivel de sospecha, el desglose por plano anatómico y las advertencias
 relevantes sobre la fiabilidad de los cortes de atención.
 
-\begin{figure}[H]
+\begin{figure}[htb]
 \centering
-\colorbox{udcgray!10}{%
-\begin{minipage}{0.88\textwidth}
-\ttfamily\small\vspace{4pt}
-\textbf{INFORME SISTEMA CASCADE}
-\hfill\textit{Herramienta de apoyo al diagnóstico}\\[-2pt]
-\rule{\linewidth}{0.4pt}\\[2pt]
-\textbf{DATOS DE ADQUISICIÓN}\\
-\hspace*{1em}Centro:~~~~~Hospital externo (fuera del dominio MRNet)\\
-\hspace*{1em}Secuencia:~~PD con supresión grasa (PD-FS)\\[3pt]
-\rule{\linewidth}{0.4pt}\\[2pt]
-\textbf{FASE 1 — TRIAJE}\\
-\hspace*{1em}Probabilidad de anomalía:~~\textbf{0,651}\\
-\hspace*{1em}Resultado:~~\textbf{ANOMALÍA DETECTADA}~~(umbral~0,30)\\[3pt]
-\rule{\linewidth}{0.4pt}\\[2pt]
-\textbf{FASE 2 — CLASIFICACIÓN}\\[2pt]
-\hspace*{1em}\textit{Lesión del ligamento cruzado anterior}\\
-\hspace*{2em}Probabilidad fusionada:~~\textbf{0,847}~~$\rightarrow$~~\textbf{Sospecha ALTA}\\
-\hspace*{2em}$\cdot$~Sagital:~~0,998~~~~$\cdot$~Coronal:~~0,596~~~~$\cdot$~Axial:~~0,896\\
-\hspace*{2em}Concordancia entre planos:~~Alta~(2/3~planos~$>$~0,80)\\[3pt]
-\hspace*{1em}\textit{Lesión meniscal}\\
-\hspace*{2em}Probabilidad fusionada:~~\textbf{0,816}~~$\rightarrow$~~\textbf{Sospecha ALTA}\\[3pt]
-\rule{\linewidth}{0.4pt}\\[2pt]
-\small\textit{[!]~Plano coronal: corte de máxima atención en borde del volumen.}\\
-\hspace*{2em}\textit{Interpretar con cautela (posible artefacto de relleno).}\\[3pt]
-\rule{\linewidth}{0.4pt}\\[2pt]
-\textbf{AVISO:}~Este informe es una herramienta de apoyo diagnóstico.\\
-\hspace*{3em}No sustituye el criterio clínico del radiólogo.\\[2pt]
-\end{minipage}%
-}
-\caption{Reporte clínico generado por el sistema CASCADE para el caso clínico
-personal. El reporte integra el resultado del triaje (Fase~1), la probabilidad
-de lesión por patología con nivel de sospecha (Fase~2), el desglose por plano
-anatómico y las advertencias sobre cortes de atención en borde de volumen.}
+\begin{tikzpicture}
+\node[draw=udcgray!50, fill=udcgray!8, rounded corners=6pt, line width=0.6pt,
+      inner sep=12pt, text width=0.80\textwidth, align=left,
+      font=\ttfamily\small] {%
+  {\normalsize\bfseries\textcolor{ficblue}{INFORME DEL SISTEMA DE APOYO AL DIAGNÓSTICO}}\\[5pt]
+  \textbf{Datos de adquisición}\\[1pt]
+  Centro: Hospital externo (fuera del dominio MRNet)\\
+  Secuencia: PD con supresión grasa (PD-FS)\\[6pt]
+  \textcolor{ficblue}{\textbf{Fase 1 $\cdot$ Triaje}}\\[1pt]
+  Probabilidad de anomalía: \textbf{0,651}\\
+  Resultado: \textbf{anomalía detectada} (umbral 0,30)\\[6pt]
+  \textcolor{ficblue}{\textbf{Fase 2 $\cdot$ Clasificación}}\\[2pt]
+  \textit{Lesión del ligamento cruzado anterior}\\
+  \hspace*{1.5em}Probabilidad fusionada: \textbf{0,847} $\rightarrow$
+  \textbf{\textcolor{red!65!black}{sospecha alta}}\\
+  \hspace*{1.5em}Por plano: sagital 0,998 $\cdot$ coronal 0,596 $\cdot$ axial 0,896\\
+  \hspace*{1.5em}Concordancia entre planos: alta (2 de 3 planos $>$ 0,80)\\[3pt]
+  \textit{Lesión meniscal}\\
+  \hspace*{1.5em}Probabilidad fusionada: \textbf{0,816} $\rightarrow$
+  \textbf{\textcolor{red!65!black}{sospecha alta}}\\[6pt]
+  {\footnotesize\itshape [!] Plano coronal: el corte de máxima atención se sitúa
+  en el borde del volumen; interpretar con cautela (posible artefacto de
+  relleno).}\\[5pt]
+  \textcolor{udcgray!60}{\rule{\linewidth}{0.4pt}}\\[2pt]
+  {\footnotesize\textbf{Aviso:} informe de apoyo al diagnóstico; no sustituye el
+  criterio clínico del radiólogo.}
+};
+\end{tikzpicture}
+\caption{Reporte clínico generado por el sistema para el caso clínico personal.
+Integra el resultado del triaje (Fase~1), la probabilidad de lesión por
+patología con su nivel de sospecha (Fase~2), el desglose por plano anatómico y
+las advertencias sobre cortes de atención en el borde del volumen.}
 \label{fig:reporte_ejemplo}
 \end{figure}
+
+
+%==========================================================================
+\section{Síntesis de resultados}
+\label{sec:sintesis_resultados}
+%==========================================================================
+
+Los experimentos presentados en este capítulo permiten esbozar una valoración
+global del comportamiento del sistema. En la detección de lesiones del LCA, la
+configuración final alcanza un AUC medio de 0,838 (IC~95\,\% [0,811; 0,865]) con
+una sensibilidad del 84,7\,\%, en línea con la prioridad clínica de minimizar
+los falsos negativos; la reducida variabilidad entre particiones apunta a un
+comportamiento estable del modelo a lo largo de la validación cruzada. La fase
+de triaje, con un AUC de 0,888, complementa esta tarea como filtro inicial.
+
+El análisis por componentes ayuda a interpretar este resultado. El
+preprocesamiento con CLAHE es la decisión con mayor respaldo estadístico,
+mientras que el \textit{attention pooling}, pese a no alcanzar significancia con
+el número de particiones disponible, muestra un efecto grande y aporta
+interpretabilidad. La ablación por planos respalda la estrategia de fusión
+ponderada, con el plano sagital como vista más informativa para el LCA. El
+análisis de errores sugiere que la mayoría de los falsos negativos corresponden
+a casos próximos al umbral de decisión, más que a fallos rotundos del modelo, y
+el coste computacional de la inferencia es reducido.
+
+Estos resultados deben interpretarse teniendo en cuenta las limitaciones del
+estudio, en particular el uso de un único conjunto de datos y la potencia
+estadística asociada a cinco particiones, que se discuten de forma integrada,
+junto con las aportaciones del trabajo, en el
+Capítulo~\ref{chap:conclusiones}.

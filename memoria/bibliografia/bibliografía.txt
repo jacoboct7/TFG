@@ -314,7 +314,7 @@
 
 @Article{chea2020,
   author  = {Payam Chea and Jason C. Mandell},
-  title   = {Current Applications and Future Directions of Deep Learning 
+  title   = {Current Applications and Future Directions of Deep Learning
              in Musculoskeletal Radiology},
   journal = {Skeletal Radiology},
   volume  = {49},
@@ -322,6 +322,19 @@
   pages   = {183--197},
   year    = {2020},
   doi     = {10.1007/s00256-019-03284-z}
+}
+
+% Imagen por RM de ligamentos y meniscos de rodilla - planos y anatomia (RSNA)
+@Article{naraghi2016,
+  author  = {Ali M. Naraghi and Lawrence M. White},
+  title   = {Imaging of Athletic Injuries of Knee Ligaments and Menisci:
+             Sports Imaging Series},
+  journal = {Radiology},
+  volume  = {281},
+  number  = {1},
+  pages   = {23--40},
+  year    = {2016},
+  doi     = {10.1148/radiol.2016152320}
 }
 
 @Article{simonyan2015,

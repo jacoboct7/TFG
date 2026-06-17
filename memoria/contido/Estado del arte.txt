@@ -203,7 +203,7 @@ generalización de los modelos a otros centros hospitalarios con equipos y
 secuencias distintos, cuestión que permanece en gran medida abierta en la
 literatura~\cite{chea2020}.
 %==========================================================================
-\section{Técnicas de preprocesamiento en MRI}
+\section{Técnicas de preprocesamiento en RM}
 \label{sec:preprocesamiento_arte}
 %==========================================================================
 

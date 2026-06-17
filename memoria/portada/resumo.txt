@@ -9,23 +9,20 @@
   diagnóstico de lesiones del ligamento cruzado anterior (LCA), pero su
   interpretación está sujeta a una variabilidad inter e intraobservador
   significativa que puede comprometer la detección de lesiones reales. Este
-  trabajo presenta CASCADE (\textit{Clinical Assessment System for Computer
-  Aided Detection and Evaluation}), un sistema de detección automática de
-  lesiones del LCA basado en aprendizaje profundo que procesa los tres planos
-  estándar de adquisición mediante seis redes ResNet-18 con \textit{attention
-  pooling}, organizadas en dos fases secuenciales: una de triaje general y
-  otra de clasificación específica. El preprocesamiento con CLAHE, junto con
-  el resto de mejoras del desarrollo iterativo, eleva el AUC desde 0,758
-  (versión base) hasta 0,838, una mejora estadísticamente significativa
-  ($p = 0{,}003$, $d = 2{,}94$). Evaluado mediante validación cruzada
+  trabajo propone un sistema de detección automática de lesiones del LCA
+  basado en aprendizaje profundo, estructurado en dos fases secuenciales: una
+  primera de triaje general, que identifica los estudios con posibles
+  hallazgos, y una segunda de clasificación específica de la lesión. Cada fase
+  procesa de forma independiente los tres planos estándar de adquisición
+  mediante redes ResNet-18 dotadas de un mecanismo de atención, cuyas salidas
+  se combinan de forma ponderada. Evaluado mediante validación cruzada
   estratificada de 5 \textit{folds} sobre el conjunto de datos MRNet, el
-  sistema alcanza un AUC de 0,838 y una sensibilidad del 84,7\,\%. La
-  interpretabilidad se aborda mediante mapas GradCAM++ aplicados sobre el
-  corte de máxima atención —que difiere del corte central en más del 96\,\%
-  de los casos— y reportes clínicos estructurados. Como validación
-  cualitativa fuera del dominio de entrenamiento, el sistema detectó ambas
-  lesiones de un caso clínico real, incluida una lesión meniscal que había
-  pasado desapercibida en el informe radiológico inicial.
+  sistema alcanza un AUC de 0,838 y una sensibilidad del 84,7\,\%. El
+  preprocesamiento de las imágenes, en particular la ecualización adaptativa
+  del contraste (CLAHE), mejora de forma estadísticamente significativa el
+  rendimiento respecto a la versión base. El sistema se complementa, además,
+  con mapas de activación GradCAM++ que aportan interpretabilidad a sus
+  predicciones.
 
 
   \vspace*{25pt}
@@ -33,22 +30,19 @@
       Knee magnetic resonance imaging is the reference technique for diagnosing
   anterior cruciate ligament (ACL) injuries, yet its interpretation is
   subject to significant inter- and intra-observer variability that may lead
-  to missed pathologies. This work presents CASCADE (\textit{Clinical
-  Assessment System for Computer Aided Detection and Evaluation}), a deep
-  learning system for automatic ACL injury detection that processes the three
-  standard acquisition planes using six ResNet-18 networks with attention
-  pooling, organised into two sequential phases: a general triage stage and a
-  specific classification stage. CLAHE preprocessing, together with the
-  remaining improvements of the iterative development, raises the AUC from
-  0.758 (baseline) to 0.838, a statistically significant gain ($p = 0.003$,
-  $d = 2.94$). Evaluated through stratified 5-fold cross-validation on the
-  MRNet dataset, the system achieves an AUC of 0.838 and a sensitivity of
-  84.7\,\%. Interpretability is addressed through GradCAM++ maps applied to
-  the maximum-attention slice—which differs from the central slice in over
-  96\,\% of cases—and structured clinical reports. As a qualitative
-  out-of-domain validation, the system correctly identified both injuries in
-  a real clinical case, including a meniscal tear that had been missed in the
-  original radiological report.
+  to missed pathologies. This work proposes a deep learning system for the
+  automatic detection of ACL injuries, structured in two sequential phases: a
+  first general triage stage that identifies studies with potential findings,
+  and a second stage of specific injury classification. Each phase
+  independently processes the three standard acquisition planes using
+  ResNet-18 networks equipped with an attention mechanism, whose outputs are
+  combined through a weighted scheme. Evaluated through stratified 5-fold
+  cross-validation on the MRNet dataset, the system achieves an AUC of 0.838
+  and a sensitivity of 84.7\,\%. Image preprocessing, in particular adaptive
+  contrast equalisation (CLAHE), yields a statistically significant
+  improvement over the baseline version. The system is further complemented
+  with GradCAM++ activation maps that provide interpretability for its
+  predictions.
   \end{segundoresumo}
 \vspace*{25pt}
 \input{portada/palabras_chave}

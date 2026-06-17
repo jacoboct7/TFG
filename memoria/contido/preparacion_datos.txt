@@ -17,7 +17,7 @@ MRNet v1.0 fue publicado por el Stanford ML Group en 2018~\cite{bien2018} y
 contiene estudios de resonancia magnética de rodilla del Stanford University 
 Medical Center. Para el presente trabajo se unifican los conjuntos de entrenamiento 
 (1\,130 casos) y validación (120 casos) originales, obteniendo un total de 1\,250 casos 
-disponibles\footnote{El conjunto de test original (120 casos) no es público y 
+disponibles\footnote{El conjunto de test original (120 casos) no es público y
 por tanto no se utiliza.}.
 
 Cada caso consta de tres volúmenes correspondientes a los planos de adquisición 
@@ -29,7 +29,7 @@ adquisición empleados a lo largo del periodo de recopilación (2001--2012).
 
 Las etiquetas diagnósticas son binarias e independientes entre sí: un mismo caso 
 puede presentar anomalía general, lesión del LCA y lesión meniscal 
-simultáneamente. El cuadro~\ref{tab:distribucion} muestra la distribución de 
+simultáneamente. El Cuadro~\ref{tab:distribucion} muestra la distribución de 
 etiquetas en el conjunto de datos completo.
 
 \begin{table}[htb]
@@ -60,7 +60,8 @@ claramente el desbalanceo en las tres etiquetas, siendo la del LCA la más acusa
 \begin{figure}[htb]
 \centering
 \includegraphics[width=1\textwidth]{imaxes/eda_labels.png}
-\caption{Se observa el marcado desbalanceo en la etiqueta del LCA (21,0\,\% de positivos).}
+\caption{Distribución de casos positivos y negativos de cada etiqueta
+diagnóstica del conjunto de datos MRNet.}
 \label{fig:eda_labels}
 \end{figure}
 
@@ -77,7 +78,7 @@ preprocesamiento.
 \label{subsec:cortes}
 
 El número de cortes por volumen varía considerablemente entre casos y entre 
-planos. El cuadro~\ref{tab:cortes} resume las estadísticas descriptivas.
+planos. El Cuadro~\ref{tab:cortes} resume las estadísticas descriptivas.
 
 \begin{table}[htb]
 \centering
@@ -96,23 +97,37 @@ Axial    & 19 & 61 & 34,3 & 35 \\
 \end{tabular}
 \end{table}
 
-La Figura~\ref{fig:eda_slices} muestra los histogramas de distribución de 
-cortes para cada plano, con la mediana y el valor objetivo de 32 cortes 
-marcados como referencia.
+La Figura~\ref{fig:eda_slices} muestra los histogramas de distribución de
+cortes para cada plano, con la mediana y el valor objetivo de 32 cortes
+marcados como referencia. En ella puede apreciarse que la mediana se sitúa en
+30 cortes en los planos sagital y coronal y en 35 en el axial. Sin embargo, la
+dispersión en torno a esos valores es considerable: hay estudios que superan
+los 50 cortes por plano, prácticamente el doble de la mediana, mientras que
+otros apenas alcanzan la mitad, con mínimos de entre 17 y 19 cortes. Esta
+disparidad en el número de imágenes por volumen hace inviable procesar los
+casos directamente con una dimensión común y motiva la estandarización a un
+número fijo de cortes.
+
+Dicho valor objetivo es el número de cortes al que se
+estandarizan todos los volúmenes para poder procesarlos por lotes con una
+dimensión común. Se fijó en 32 por situarse muy próximo a la mediana de los tres
+planos (30 en sagital y coronal, 35 en axial), lo que minimiza la cantidad de
+información que es necesario recortar en los volúmenes con más cortes o rellenar
+en los que tienen menos. Además, al ser una potencia de dos, resulta cómodo para
+las operaciones internas de la red.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=1\textwidth]{imaxes/eda_slices.png}
-\caption{La línea roja discontinua 
-indica la mediana de cada plano y la línea negra punteada el valor objetivo de 
-32 cortes seleccionado para la estandarización. El plano axial presenta una 
-mediana ligeramente superior (35) y mayor variabilidad que los planos sagital 
-y coronal.}
+\caption{Distribución del número de cortes por plano en el conjunto de datos
+MRNet. La línea roja discontinua indica la mediana de cada plano y la línea
+negra punteada el valor objetivo de 32 cortes seleccionado para la
+estandarización.}
 \label{fig:eda_slices}
 \end{figure}
 
-Esta variabilidad justifica la necesidad de estandarizar la dimensión de cortes,
-estrategia detallada en la Sección~\ref{subsec:seleccion_cortes}.
+La estrategia concreta de selección y rellenado empleada para alcanzar esa
+dimensión común se detalla en la Sección~\ref{subsec:seleccion_cortes}.
 
 \subsection{Visualización de muestras}
 \label{subsec:muestras}
@@ -236,8 +251,7 @@ máscara anatómica gaussiana.}
 
 La contribución de CLAHE al rendimiento del modelo se valida experimentalmente 
 mediante un estudio de ablación con análisis de significancia estadística (véase 
-el Capítulo~\ref{chap:resultados}), observándose una mejora estadísticamente 
-significativa del AUC ($p = 0{,}003$, test~$t$ pareado).
+el Capítulo~\ref{chap:resultados}).
 
 \subsection{Normalización}
 \label{subsec:normalizacion}
@@ -303,7 +317,7 @@ con el objetivo de incrementar la variabilidad del conjunto de entrenamiento y
 reducir el sobreajuste~\cite{shorten2019}. Las transformaciones se dividen en 
 dos grupos: geométricas y de intensidad.
 
-Las transformaciones \textbf{geométricas} simulan variaciones en la posición 
+Las transformaciones geométricas simulan variaciones en la posición
 del paciente y el protocolo de adquisición:
 
 \begin{itemize}
@@ -318,7 +332,7 @@ del paciente y el protocolo de adquisición:
           si es menor, se rellena con replicación de bordes.
 \end{itemize}
 
-Las transformaciones de \textbf{intensidad} simulan variaciones en las 
+Las transformaciones de intensidad simulan variaciones en las
 condiciones de adquisición de la señal de RM:
 
 \begin{itemize}

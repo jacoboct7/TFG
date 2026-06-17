@@ -113,6 +113,9 @@
 
 \begin{document}
 
+% Activa la configuración en español de la bibliografía (estilo IEEEtran)
+\bstctlcite{IEEEexample:BSTcontrol}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PORTADA
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -213,8 +216,8 @@ lograr llevar a cabo la propuesta de este trabajo de fin de grado.
 % BIBLIOGRAFÍA
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\bibliographystyle{plain}
-\bibliography{bibliografia/bibliografia.bib}
+\bibliographystyle{IEEEtran}
+\bibliography{bibliografia/bibconf-es,bibliografia/bibliografia}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIN DEL DOCUMENTO
