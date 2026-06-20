@@ -17,7 +17,7 @@ MRNet v1.0 fue publicado por el Stanford ML Group en 2018~\cite{bien2018} y
 contiene estudios de resonancia magnética de rodilla del Stanford University 
 Medical Center. Para el presente trabajo se unifican los conjuntos de entrenamiento 
 (1\,130 casos) y validación (120 casos) originales, obteniendo un total de 1\,250 casos 
-disponibles\footnote{El conjunto de test original (120 casos) no es público y
+disponibles\footnote{El conjunto de test original (120 casos) no es público y 
 por tanto no se utiliza.}.
 
 Cada caso consta de tres volúmenes correspondientes a los planos de adquisición 
@@ -97,8 +97,8 @@ Axial    & 19 & 61 & 34,3 & 35 \\
 \end{tabular}
 \end{table}
 
-La Figura~\ref{fig:eda_slices} muestra los histogramas de distribución de
-cortes para cada plano, con la mediana y el valor objetivo de 32 cortes
+La Figura~\ref{fig:eda_slices} muestra los histogramas de distribución de 
+cortes para cada plano, con la mediana y el valor objetivo de 32 cortes 
 marcados como referencia. En ella puede apreciarse que la mediana se sitúa en
 30 cortes en los planos sagital y coronal y en 35 en el axial. Sin embargo, la
 dispersión en torno a esos valores es considerable: hay estudios que superan
@@ -121,8 +121,7 @@ las operaciones internas de la red.
 \includegraphics[width=1\textwidth]{imaxes/eda_slices.png}
 \caption{Distribución del número de cortes por plano en el conjunto de datos
 MRNet. La línea roja discontinua indica la mediana de cada plano y la línea
-negra punteada el valor objetivo de 32 cortes seleccionado para la
-estandarización.}
+negra punteada el valor objetivo de 32 cortes seleccionado para la estandarización.}
 \label{fig:eda_slices}
 \end{figure}
 
@@ -146,7 +145,6 @@ Todas las imágenes son monocanal (escala de grises), lo que requiere adaptar
 la primera capa convolucional del \textit{backbone} 
 ResNet-18~\cite{he2016}, originalmente diseñada para imágenes RGB de 3 canales, 
 a una entrada de 1 canal.
-
 
 
 %==========================================================================

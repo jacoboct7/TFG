@@ -130,13 +130,18 @@ descrita en la Sección~\ref{sec:umbral}.
 \caption{Curvas ROC obtenidas en los cinco \textit{folds} de la validación
 cruzada. La curva azul representa el comportamiento medio del sistema (AUC
 0,838) y el punto destacado corresponde al punto operativo del umbral clínico
-seleccionado (sensibilidad $\geq$ 85\,\%).}
+seleccionado (sensibilidad $\geq$ 85\,\%). En los ejes, TPR (\textit{true
+positive rate}) es la tasa de verdaderos positivos o sensibilidad (TVP), y FPR
+(\textit{false positive rate}) es la tasa de falsos positivos (TFP), igual a
+$1$ menos la especificidad.}
 \label{fig:roc}
 \end{figure}
 
-La Figura~\ref{fig:training_curves} muestra, en un panel independiente para
-cada uno de los cinco \textit{folds}, las curvas de pérdida de entrenamiento y
-validación. Presentarlas por separado permite apreciar el comportamiento del
+
+Las Figuras~\ref{fig:training_curves} y~\ref{fig:training_curves5} muestran, en
+un panel independiente para cada uno de los cinco \textit{folds}, las curvas de
+pérdida de entrenamiento y validación. Presentarlas por separado permite
+apreciar el comportamiento del
 entrenamiento en cada partición, donde se observa un patrón coherente entre
 todas ellas: la pérdida de entrenamiento desciende de forma progresiva a lo
 largo de las épocas, indicando que el modelo aprende de los datos de forma
@@ -150,25 +155,33 @@ refleja que el modelo alcanza rápidamente su punto óptimo en el conjunto de
 validación: continuar el entrenamiento más allá no reduciría la pérdida de
 validación sino que introduciría sobreajuste.
 
-\begin{figure}[htb]
+\begin{figure}[p]
 \centering
-\subfigure[\textit{Fold} 1]{\includegraphics[width=0.49\textwidth]{imaxes/training_curves_fold1.png}}
-\hfill
-\subfigure[\textit{Fold} 2]{\includegraphics[width=0.49\textwidth]{imaxes/training_curves_fold2.png}}
+\subfigure[\textit{Fold} 1]{\includegraphics[width=0.95\textwidth]{imaxes/training_curves_fold1.png}}
 
-\vspace{0.4em}
-\subfigure[\textit{Fold} 3]{\includegraphics[width=0.49\textwidth]{imaxes/training_curves_fold3.png}}
-\hfill
-\subfigure[\textit{Fold} 4]{\includegraphics[width=0.49\textwidth]{imaxes/training_curves_fold4.png}}
+\subfigure[\textit{Fold} 2]{\includegraphics[width=0.95\textwidth]{imaxes/training_curves_fold2.png}}
 
-\vspace{0.4em}
-\subfigure[\textit{Fold} 5]{\includegraphics[width=0.49\textwidth]{imaxes/training_curves_fold5.png}}
+\subfigure[\textit{Fold} 3]{\includegraphics[width=0.95\textwidth]{imaxes/training_curves_fold3.png}}
 \caption{Curvas de pérdida de entrenamiento (línea continua) y validación
-(línea discontinua) para cada uno de los cinco \textit{folds} de la validación
-cruzada, en paneles independientes. Los marcadores verticales indican el punto
-de detención temprana de cada \textit{fold}.}
+(línea discontinua) para los \textit{folds} 1 a 3 de la validación cruzada, en
+paneles independientes. Los marcadores verticales indican el punto de detención
+temprana de cada \textit{fold}. Las curvas de los \textit{folds} 4 y 5 se
+recogen en la Figura~\ref{fig:training_curves5}.}
 \label{fig:training_curves}
 \end{figure}
+
+\begin{figure}[p]
+\centering
+\subfigure[\textit{Fold} 4]{\includegraphics[width=0.95\textwidth]{imaxes/training_curves_fold4.png}}
+
+\subfigure[\textit{Fold} 5]{\includegraphics[width=0.95\textwidth]{imaxes/training_curves_fold5.png}}
+\caption{Curvas de pérdida de entrenamiento (línea continua) y validación
+(línea discontinua) de los \textit{folds} 4 y 5, continuación de la
+Figura~\ref{fig:training_curves}. Los marcadores verticales indican el punto de
+detención temprana.}
+\label{fig:training_curves5}
+\end{figure}
+
 
 %==========================================================================
 \section{Evaluación de la fase de triaje}
@@ -226,23 +239,26 @@ adecuada para la comparación.
 \begin{table}[htb]
 \centering
 \caption{Ablación por plano anatómico para la detección de lesiones del LCA
-(valores medios de la validación cruzada de 5 \textit{folds}). Las columnas
-Sens y Espec se calculan al umbral clínico.}
+(media\,$\pm$\,desviación típica de la validación cruzada de 5 \textit{folds}).
+Las columnas Sens y Espec se calculan al umbral clínico.}
 \label{tab:ablacion_plano}
 \rowcolors{2}{white}{udcgray!25}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrr}
 \rowcolor{udcpink!25}
 \textbf{Configuración} & \textbf{Sens (\%)} & \textbf{Espec (\%)} &
 \textbf{F1} & \textbf{AUC} \\\hline
-Solo sagital       & 77,1 & 72,5 & 0,558 & 0,830 \\
-Solo coronal       & 64,8 & 57,5 & 0,396 & 0,643 \\
-Solo axial         & 72,1 & 63,1 & 0,473 & 0,743 \\
-Sagital + coronal  & 83,6 & 64,4 & 0,531 & 0,831 \\
-Sagital + axial    & 78,7 & 71,4 & 0,560 & 0,829 \\
-Completo (S+C+A)   & 84,7 & 64,0 & 0,533 & 0,838 \\
+Solo sagital       & 77,1\,$\pm$\,10,7 & 72,5\,$\pm$\,13,0 & 0,558\,$\pm$\,0,069 & 0,830\,$\pm$\,0,035 \\
+Solo coronal       & 64,8\,$\pm$\,16,9 & 57,5\,$\pm$\,16,0 & 0,396\,$\pm$\,0,027 & 0,643\,$\pm$\,0,054 \\
+Solo axial         & 72,1\,$\pm$\,12,8 & 63,1\,$\pm$\,17,7 & 0,473\,$\pm$\,0,051 & 0,743\,$\pm$\,0,029 \\
+Sagital + coronal  & 83,6\,$\pm$\,5,0 & 64,4\,$\pm$\,9,0 & 0,531\,$\pm$\,0,054 & 0,831\,$\pm$\,0,027 \\
+Sagital + axial    & 78,7\,$\pm$\,10,7 & 71,4\,$\pm$\,14,4 & 0,560\,$\pm$\,0,072 & 0,829\,$\pm$\,0,032 \\
+Completo (S+C+A)   & 84,7\,$\pm$\,5,9 & 64,0\,$\pm$\,9,6 & 0,533\,$\pm$\,0,049 & 0,838\,$\pm$\,0,022 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
+
 
 Entre los planos individuales, el sagital es el más informativo para la
 detección del LCA, con un AUC medio de 0,830, por delante del axial (0,743) y
@@ -259,6 +275,16 @@ mejores valores de toda la tabla, con un AUC medio de 0,838 y una sensibilidad
 del 84,7\,\%. Dado que la sensibilidad es la métrica prioritaria del sistema,
 este resultado justifica empíricamente la decisión de fusionar las tres vistas
 en lugar de basar la detección en el plano sagital por sí solo.
+
+Más allá de los valores medios, conviene atender a la desviación típica entre
+\textit{folds}. La configuración completa no solo obtiene el mejor rendimiento
+medio, sino también la menor dispersión (AUC 0,838\,$\pm$\,0,022 y sensibilidad
+84,7\,$\pm$\,5,9\,\%), mientras que los planos aislados presentan una
+variabilidad sensiblemente mayor, especialmente el coronal (sensibilidad
+64,8\,$\pm$\,16,9\,\%). La fusión de las tres vistas tiende, por tanto, a
+estabilizar las predicciones y reduce la sensibilidad del sistema a las
+particiones concretas de los datos, lo que sugiere un comportamiento más robusto
+que el de cualquier plano por separado.
 
 Merece una mención el papel del plano coronal. Pese a ser el menos informativo
 de forma aislada para el LCA, recibe en la fusión un peso (0,35) superior al del
@@ -475,7 +501,7 @@ un falso negativo.
 %==========================================================================
 
 El sistema genera reportes clínicos estructurados que integran las dos fases.
-Cada reporte incluye el resultado del triaje (Fase 1), la probabilidad
+Cada reporte incluye el resultado del triaje (Fase 1), la probabilidad 
 de lesión del LCA con su nivel de sospecha (Fase 2), el análisis desglosado por 
 plano con el corte más relevante de cada vista, y una medida de concordancia 
 entre planos. Esta estructura está orientada a facilitar la integración del 
@@ -486,6 +512,9 @@ Los niveles de sospecha se definen en función de la probabilidad predicha: muy
 bajo, bajo, moderado, alto o muy alto. El reporte incluye además una advertencia 
 explícita de que el sistema es una herramienta de asistencia que no sustituye 
 el criterio del personal de radiología.
+
+En la Figura~\ref{fig:reporte_ejemplo} se ve cómo sería un ejemplo de un reporte
+clínico generado por el sistema.
 
 %==========================================================================
 \section{Eficiencia computacional}
@@ -568,7 +597,7 @@ anterior, coherente con una probabilidad de 0,998. El plano axial exhibe
 igualmente activaciones en la región central de la articulación. Este patrón
 de activación, obtenido sobre una secuencia PD-FS procedente de un centro
 externo, sugiere una capacidad de generalización del sistema más allá del
-dominio de entrenamiento, si bien sobre la base de un único caso.
+dominio de entrenamiento.
 
 \begin{figure}[htb]
 \centering
@@ -587,10 +616,7 @@ modelo entrenado con datos de un único centro y protocolo de adquisición fue
 capaz de señalar ambas patologías en un estudio de dominio distinto, incluida
 la lesión que no había sido identificada inicialmente.
 
-\subsection{Ejemplo de reporte clínico generado}
-
-El sistema genera reportes clínicos estructurados que integran los
-resultados de ambas fases. La Figura~\ref{fig:reporte_ejemplo} reproduce el
+La Figura~\ref{fig:reporte_ejemplo} reproduce el
 reporte generado para el caso personal, tal y como se presentaría al
 radiólogo: incluye el resultado del triaje, las probabilidades por patología
 con su nivel de sospecha, el desglose por plano anatómico y las advertencias

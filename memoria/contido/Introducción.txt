@@ -49,10 +49,10 @@ una atención limitada~\cite{singh2020}.
 \label{subsec:motivacion}
 
 El interés por desarrollar este proyecto no nace de una simple inquietud 
-académica, sino de una experiencia personal vivida en primera persona. Durante 
+académica, sino de una experiencia personal. Durante 
 la práctica deportiva sufrí una lesión grave de rodilla. La primera resonancia 
 magnética dio pie a un informe clínico confuso: se diagnosticó una rotura 
-completa del ligamento cruzado anterior, combinada con esguinces colaterales y 
+completa del LCA, combinada con esguinces colaterales y 
 contusiones en el menisco externo. Con la incertidumbre de un diagnóstico tan 
 severo, decidí consultar a otros especialistas; tras revisar las mismas 
 imágenes, concluyeron que la rotura del LCA era solo parcial, lo que cambiaba 
@@ -79,7 +79,7 @@ pueden aportar objetividad y reproducibilidad al entorno clínico.
 El objetivo principal de este trabajo es diseñar, implementar y evaluar un 
 sistema de aprendizaje profundo multiplano 
 capaz de procesar volúmenes de resonancia magnética de rodilla para la detección 
-de lesiones del ligamento cruzado anterior, proporcionando predicciones 
+de lesiones del LCA, proporcionando predicciones 
 interpretables y priorizando la detección de lesiones reales mediante la 
 optimización del umbral de decisión para sensibilidad.
 Para alcanzar este objetivo general, se plantean los siguientes objetivos específicos:
@@ -261,9 +261,10 @@ siguientes herramientas principales:
 
 El entorno de ejecución es \textbf{Kaggle Notebooks} con GPU Tesla T4 (16~GB 
 VRAM), sesiones de hasta 12 horas y persistencia de archivos activada. 
-%Las limitaciones de este entorno determinan decisiones de diseño como la resolución 
-%de las imágenes (224$\times$224), el tamaño de \textit{batch} (2) y el 
-%\textit{backbone} empleado (ResNet-18).
+
+El código fuente del proyecto, incluido el cuaderno de desarrollo con la
+implementación completa del sistema, se encuentra disponible en el repositorio
+público \texttt{\url{https://github.com/jacoboct7/TFG.git}}.
 
 %==========================================================================
 \section{Estructura de la memoria}
@@ -273,7 +274,7 @@ VRAM), sesiones de hasta 12 horas y persistencia de archivos activada.
 El resto de la presente memoria académica se estructura y organiza de la siguiente manera:
  
 \begin{itemize}
-    \item \textbf{Capítulo~\ref{chap:estado_arte}: Estado del arte.} Revisa los 
+    \item \textbf{Capítulo~\ref{chap:estado_arte}: Marco teórico y estado del arte.} Revisa los 
           trabajos previos en detección de lesiones del LCA, técnicas de 
           preprocesamiento en RM y métodos de interpretabilidad.
     
@@ -281,8 +282,8 @@ El resto de la presente memoria académica se estructura y organiza de la siguie
           Detalla el análisis exploratorio del conjunto de datos y el flujo de 
           preprocesamiento, incluyendo CLAHE y la máscara de atención anatómica.
     
-    \item \textbf{Capítulo~\ref{chap:cascade}: Metodología.} Describe
-          el diseño del sistema en cascada, las decisiones arquitectónicas y la
+    \item \textbf{Capítulo~\ref{chap:cascade}: Metodología.} Describe 
+          el diseño del sistema en cascada, las decisiones arquitectónicas y la 
           evolución iterativa del modelo.
     
     \item \textbf{Capítulo~\ref{chap:resultados}: Resultados.} Presenta los 

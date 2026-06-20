@@ -218,7 +218,7 @@ de los ejemplos bien clasificados:
 donde $p_t$ es la probabilidad predicha para la clase correcta,
 $\alpha = 0{,}25$ controla el peso relativo de las clases y
 $\gamma = 2{,}0$ reduce la contribución de los ejemplos fáciles. Aunque
-la etiqueta de anomalía presenta un desbalance inverso al del LCA
+la etiqueta de anomalía presenta un desbalanceo inverso al del LCA
 (80,6\,\% de positivos), \textit{Focal Loss} resulta efectiva porque reduce
 el sobreajuste del modelo a los ejemplos fáciles de la clase mayoritaria,
 forzándolo a aprender las características más sutiles de las rodillas
@@ -329,7 +329,7 @@ Se evaluó también \textit{Focal Loss} para la Fase 2, pero empíricamente la
 WBCE produjo mejores resultados. Esto puede explicarse porque la etiqueta del
 LCA tiene un desbalance moderado (1:4), donde la ponderación directa de
 la BCE resulta más efectiva que la modulación adaptativa de \textit{Focal
-Loss}, diseñada originalmente para desbalances más extremos en detección de
+Loss}, diseñada originalmente para desbalanceos más extremos en detección de
 objetos~\cite{lin2017focal}.
 
 %==========================================================================
@@ -427,7 +427,7 @@ relevantes del sistema desde el punto de vista clínico. Se calculan tres
 umbrales y se selecciona el clínico:
 
 \begin{itemize}
-    \item \textbf{Óptimo para F1:} maximiza el F1 sobre el conjunto de
+    \item \textbf{Óptimo para F1:} maximiza el F1-score sobre el conjunto de
           validación. Tiende a producir umbrales altos
           ($\sim 0{,}5$--$0{,}6$) que priorizan la precisión sobre la
           sensibilidad.
@@ -476,13 +476,13 @@ verdaderos negativos (VN), falsos positivos (FP) y falsos negativos (FN), se
 emplean las siguientes:
 
 \begin{itemize}
-    \item \textbf{Sensibilidad} (tasa de verdaderos positivos, TPR):
+    \item \textbf{Sensibilidad} (tasa de verdaderos positivos, TVP):
           $\text{VP}/(\text{VP}+\text{FN})$. Proporción de lesiones reales
           correctamente detectadas. Es la métrica prioritaria del sistema,
           dada la asimetría clínica que penaliza los falsos negativos.
     \item \textbf{Especificidad}: $\text{VN}/(\text{VN}+\text{FP})$. Proporción
           de rodillas sanas correctamente identificadas. Su complementario, la
-          tasa de falsos positivos ($\text{FPR} = 1 - \text{especificidad}$),
+          tasa de falsos positivos (TFP), igual a $1$ menos la especificidad,
           constituye el eje horizontal de la curva ROC.
     \item \textbf{F1}: media armónica de la precisión y la sensibilidad.
           Resume en un único valor el equilibrio entre ambas, especialmente

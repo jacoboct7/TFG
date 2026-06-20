@@ -1,4 +1,4 @@
-\chapter{Estado del arte}
+\chapter{Marco teórico y estado del arte}
 \label{chap:estado_arte}
 
 \lettrine{E}{n} este capítulo se revisan los principales trabajos y técnicas que 
@@ -81,8 +81,9 @@ y contraste entre vistas.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{imaxes/eda_muestras.png}
-\caption{Fila superior: caso con lesión del LCA. Fila inferior:
+\includegraphics[width=1\textwidth]{imaxes/eda_muestras.png}
+\caption{Muestras del conjunto de datos MRNet para los tres planos de adquisición.
+Fila superior: caso con lesión del LCA. Fila inferior:
 caso sin lesión. De izquierda a derecha: plano sagital, coronal y axial.}
 \label{fig:mrnet_planos}
 \end{figure}
