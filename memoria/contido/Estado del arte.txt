@@ -4,10 +4,10 @@
 \lettrine{E}{n} este capítulo se revisan los principales trabajos y técnicas que 
 conforman el contexto científico del proyecto. Se aborda, en primer lugar, el 
 papel del aprendizaje profundo en el análisis de imagen médica. A continuación, 
-se describen los enfoques específicos aplicados a la detección de lesiones de 
+se describen los enfoques específicos aplicados a la detección de lesiones de
 rodilla en resonancia magnética. Por último, se presentan las técnicas de
 preprocesamiento e interpretabilidad empleadas en trabajos previos sobre
-detección de lesiones de rodilla en resonancia magnética.
+este problema.
 
 %==========================================================================
 \section{Aprendizaje profundo en imagen médica}
@@ -79,7 +79,7 @@ La Figura~\ref{fig:mrnet_planos} muestra ejemplos representativos de cortes en
 cada plano de adquisición, ilustrando las diferencias de perspectiva anatómica
 y contraste entre vistas.
 
-\begin{figure}[H]
+\begin{figure}[htb]
 \centering
 \includegraphics[width=1\textwidth]{imaxes/eda_muestras.png}
 \caption{Muestras del conjunto de datos MRNet para los tres planos de adquisición.
@@ -166,7 +166,7 @@ limitación es la asignación de pesos iguales a todos los planos en la fusión,
 ignorando la evidencia radiológica que indica que el plano sagital es más 
 informativo para la evaluación del LCA.
 
-Por su parte, Panteli et al.~\cite{mdpi2021mrnet} propusieron un enfoque 
+Por su parte, Kara y Hardalaç~\cite{mdpi2021mrnet} propusieron un enfoque
 progresivo sobre MRNet, demostrando que la aplicación secuencial de técnicas de 
 preprocesamiento y aumento de datos mejora de forma incremental el 
 rendimiento de los modelos.
@@ -180,7 +180,7 @@ relevantes de cada corte, extracción de características multi-escala y fusión
 características a nivel intermedio (\textit{feature-level fusion}) en vez de a
 nivel de decisión. Algunos de estos enfoques reportan AUCs superiores a 0,95
 para la detección de lesiones del LCA~\cite{tsai2020}. Sin embargo, el incremento en la
-complejidad estructural conlleva un coste computacional significativamente mayor
+complejidad estructural conlleva un coste computacional considerablemente mayor
 y, con frecuencia, una reducción en la interpretabilidad del modelo, lo que
 puede limitar su adopción en entornos clínicos~\cite{chea2020}.
 
@@ -189,7 +189,7 @@ puede limitar su adopción en entornos clínicos~\cite{chea2020}.
 
 Aunque MRNet es el banco de pruebas dominante, una parte de la literatura ha
 abordado la detección de lesiones de rodilla sobre conjuntos institucionales
-propios. Wang et al.~\cite{wang2025} desarrollaron un sistema que combina
+propios. Alic et al.~\cite{alic2025} desarrollaron un sistema que combina
 detección de objetos mediante YOLOv9 y redes convolucionales sobre un conjunto
 de 253 pacientes con RM sagital, alcanzando resultados competitivos mediante un
 enfoque de detección y clasificación en dos etapas. La revisión
@@ -311,7 +311,7 @@ fracción pequeña de esta.
 \subsection{Interpretabilidad en el contexto volumétrico}
 \label{subsec:interp_volumetrica}
 
-La aplicación de métodos basados en mapas de activación (como GradCAM o GradCAM++) en el contexto específico de volúmenes de RM plantea un desafío metodológico: la elección del corte sobre el cual aplicar la visualización. La práctica habitual en los trabajos que emplean redes 2D, incluyendo el diseño original de Bien et al.~\cite{bien2018}, ha consistido en visualizar el corte geométricamente central del volumen bajo la asunción de que representa el núcleo de la estructura anatómica. Singh et al.~\cite{singh2020} advierten, en su revisión sobre interpretabilidad en aprendizaje profundo médico, que la selección ad hoc del corte de visualización puede comprometer la fidelidad de la explicación generada, ya que el corte efectivamente utilizado por el modelo en su predicción puede no coincidir con el elegido por convención.
+La aplicación de métodos basados en mapas de activación (como GradCAM o GradCAM++) en el contexto específico de volúmenes de RM plantea un desafío metodológico: la elección del corte sobre el cual aplicar la visualización. La práctica habitual en los trabajos que emplean redes 2D, incluyendo el diseño original de Bien et al.~\cite{bien2018}, ha consistido en visualizar el corte geométricamente central del volumen bajo el supuesto de que representa el núcleo de la estructura anatómica. Singh et al.~\cite{singh2020} advierten, en su revisión sobre interpretabilidad en aprendizaje profundo médico, que la selección ad hoc del corte de visualización puede comprometer la fidelidad de la explicación generada, ya que el corte efectivamente utilizado por el modelo en su predicción puede no coincidir con el elegido por convención.
 
 %==========================================================================
 \section{Posicionamiento del presente trabajo}

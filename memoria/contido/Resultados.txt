@@ -573,7 +573,7 @@ Lesión meniscal (Fase 2)  & 0,816 & Sospecha de lesión \\
 \end{tabular}
 \end{table}
 
-El sistema detectó correctamente ambas lesiones. Especialmente significativa
+El sistema detectó correctamente ambas lesiones. Especialmente relevante
 resulta la detección de la lesión meniscal (probabilidad 0,816): es
 precisamente la lesión que los radiólogos pasaron por alto en el primer
 informe, y que condicionó el proceso de recuperación del paciente durante

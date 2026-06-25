@@ -7,7 +7,7 @@ articulaciones complejas como la rodilla. Su capacidad para diferenciar tejidos
 blandos sin radiación ionizante la convierte en el estándar clínico para detectar 
 lesiones del ligamento cruzado anterior (LCA), rupturas meniscales y otras 
 patologías estructurales. Las lesiones del LCA presentan una incidencia 
-significativa en la población general, con estudios epidemiológicos que reportan 
+notable en la población general, con estudios epidemiológicos que reportan 
 tasas de reconstrucción crecientes en las últimas 
 décadas~\cite{sanders2016}, y una prevalencia especialmente elevada en 
 deportistas jóvenes que practican deportes de contacto o de cambios de dirección.
@@ -38,7 +38,7 @@ resonancia magnética de rodilla, Bien et al.~\cite{bien2018} introdujeron en
 AlexNet~\cite{krizhevsky2012}, preentrenada en ImageNet~\cite{deng2009}, capaz
 de detectar anomalías generales, lesiones del LCA y desgarros meniscales con
 resultados prometedores. Trabajos posteriores como los de
-Azcona et al.~\cite{azcona2020} y Panteli et al.~\cite{mdpi2021mrnet} han 
+Azcona et al.~\cite{azcona2020} y los de Kara y Hardalaç~\cite{mdpi2021mrnet} han
 explorado arquitecturas más complejas y enfoques progresivos sobre el mismo 
 conjunto de datos. Sin embargo, la mayoría de estos sistemas comparten dos 
 limitaciones: han sido evaluados sobre particiones fijas de 120 
@@ -119,14 +119,13 @@ como herramienta de apoyo al proceso diagnóstico, no como sustitución del
 criterio clínico. El trabajo incorpora aspectos relacionados con la
 interpretabilidad del modelo además del análisis de su rendimiento predictivo.
 
-Aunque el conjunto de datos MRNet proporciona etiquetas también para
-desgarros meniscales, y el sistema incorpora la predicción de esta patología
-como salida secundaria de la Fase 2, la evaluación cuantitativa sistemática
-mediante validación cruzada se circunscribe a la detección del LCA, en
-consonancia con el objetivo principal del trabajo. La predicción meniscal se
-ilustra cualitativamente en el caso clínico personal del
-Capítulo~\ref{chap:resultados}, pero no se reportan métricas de validación
-cruzada para esta tarea.
+El conjunto de datos MRNet incluye también etiquetas para desgarros
+meniscales, y el sistema desarrollado predice igualmente esta patología. Aun
+así, la evaluación del rendimiento se centra en la detección del LCA, que es
+el objetivo principal del trabajo. La predicción meniscal solo se muestra de
+forma cualitativa en el caso clínico personal del
+Capítulo~\ref{chap:resultados}, sin medir su rendimiento de manera
+sistemática.
 
 
 %==========================================================================

@@ -11,9 +11,10 @@ limitaciones identificadas y propone líneas de investigación futura.
 %==========================================================================
 Este trabajo presenta un sistema de detección automática de lesiones
 del ligamento cruzado anterior en resonancia magnética de rodilla basado en
-aprendizaje profundo. Las aportaciones se agrupan en cuatro ámbitos.
+aprendizaje profundo. Las aportaciones del trabajo se reparten en cuatro frentes: el rendimiento
+del sistema, el preprocesamiento, la arquitectura y la interpretabilidad.
 
-En el ámbito del \textbf{rendimiento predictivo}, el sistema alcanza un AUC
+El sistema alcanza un AUC
 medio de 0,838 con una sensibilidad del 84,7\,\% en validación cruzada
 estratificada de 5 \textit{folds}~\cite{kohavi1995} sobre los 1\,250 casos del
 conjunto de datos MRNet, con un comportamiento estable entre particiones. La
@@ -21,7 +22,7 @@ fase de triaje complementa la detección como filtro inicial, capaz de descartar
 con seguridad los casos más claramente normales antes de la clasificación
 específica.
 
-En el ámbito del \textbf{preprocesamiento}, la incorporación de
+En el preprocesamiento, la incorporación de
 CLAHE~\cite{pizer1987} es la decisión de diseño con mayor respaldo estadístico
 del trabajo. Su efecto sobre el rendimiento se validó mediante un test pareado
 sobre los cinco \textit{folds}, resultando estadísticamente significativo
@@ -30,7 +31,7 @@ matizar que parte de esa mejora se solapa con el resto de avances del desarrollo
 iterativo, por lo que el efecto aislado de CLAHE es más moderado, si bien sigue
 constituyendo una contribución consistente.
 
-En el ámbito de la \textbf{arquitectura}, la sustitución del \textit{max
+En la arquitectura, la sustitución del \textit{max
 pooling}~\cite{bien2018} por \textit{attention pooling}~\cite{ilse2018} sobre
 los cortes del volumen mejora la capacidad discriminativa del sistema con un
 efecto grande, aunque sin alcanzar significancia estadística debido a la
@@ -41,8 +42,8 @@ ablación: el plano sagital es el más informativo de forma aislada, pero la
 combinación de los tres planos ofrece el mejor rendimiento global, lo que
 confirma el valor de integrar las distintas vistas.
 
-En el ámbito de la \textbf{interpretabilidad}, la principal aportación es un
-método de explicación fiel a la decisión del modelo: en lugar de aplicar
+La aportación más distintiva tiene que ver con la interpretabilidad. Se
+trata de un método de explicación fiel a la decisión del modelo: en lugar de aplicar
 GradCAM++ sobre el corte geométricamente central del volumen, como suele
 hacerse, se aplica sobre el corte que el módulo de atención señala como más
 relevante. El análisis confirma que ese corte rara vez coincide con el central,
@@ -113,13 +114,13 @@ forma cualitativa por el resultado del caso clínico personal, adquirido con
 secuencia PD con supresión grasa en un centro distinto, pero no ha sido
 validada de forma sistemática.
 
-La segunda limitación es la \textbf{potencia estadística reducida} derivada
-de la disponibilidad de únicamente cinco \textit{folds} en la validación
-cruzada. Esta limitación impide establecer con significancia estadística la
-superioridad del \textit{attention pooling} sobre el \textit{max pooling}
-($p = 0{,}056$) a pesar de un tamaño del efecto grande, y hace que las
-comparativas de ablación sobre configuraciones individuales sean indicativas
-en lugar de concluyentes.
+La segunda limitación es el \textbf{reducido número de \textit{folds}} de la
+validación cruzada, solo cinco, lo que deja poco margen para sacar
+conclusiones estadísticas firmes. Esto impide establecer con significancia
+estadística la superioridad del \textit{attention pooling} sobre el
+\textit{max pooling} ($p = 0{,}056$) a pesar de un tamaño del efecto grande,
+y hace que las comparativas de ablación sobre configuraciones individuales
+sean indicativas en lugar de concluyentes.
 
 La tercera limitación es la \textbf{ausencia de comparativa directa con
 lectores humanos} sobre el mismo conjunto de test. Las métricas absolutas
@@ -161,7 +162,7 @@ que podrían ampliar el alcance y la solidez del sistema.
           cuantificar si actuaría como una segunda lectura efectiva en la
           práctica.
 
-    \item \textbf{Arquitecturas volumétricas nativas.} Las redes convolucionales
+    \item \textbf{Arquitecturas tridimensionales.} Las redes convolucionales
           tridimensionales o los transformadores de visión adaptados al
           procesamiento volumétrico podrían capturar la continuidad espacial de
           la lesión en las tres dimensiones sin discretizar el volumen en cortes

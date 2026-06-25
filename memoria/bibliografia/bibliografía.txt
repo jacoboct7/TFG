@@ -63,14 +63,14 @@
 }
 
 @Article{mdpi2021mrnet,
-  author  = {Andreas Panteli and others},
-  title   = {Detection and Classification of Knee Injuries from {MR} Images 
-             Using the {MRNet} Dataset with Progressively Operating Deep 
+  author  = {Ali Can Kara and Fırat Hardalaç},
+  title   = {Detection and Classification of Knee Injuries from {MR} Images
+             Using the {MRNet} Dataset with Progressively Operating Deep
              Learning Methods},
   journal = {Machine Learning and Knowledge Extraction},
   volume  = {3},
   number  = {4},
-  pages   = {1001--1014},
+  pages   = {1009--1029},
   year    = {2021},
   doi     = {10.3390/make3040050}
 }
@@ -299,21 +299,21 @@
   doi     = {10.3390/diagnostics12020537}
 }
 
-@Article{wang2025,
-  author  = {Wang, Y. and others},
-  title   = {Artificial Intelligence-Assisted Accurate Diagnosis of 
-             Anterior Cruciate Ligament Tears Using Customized {CNN} 
+@Article{alic2025,
+  author  = {Taner Alic and Sinan Zehir and Meryem Yalcinkaya and
+             Emre Deniz and Harun Emre Kiran and Onur Afacan},
+  title   = {Artificial intelligence-assisted accurate diagnosis of
+             anterior cruciate ligament tears using customized {CNN}
              and {YOLOv9}},
-  journal = {Diagnostics},
-  volume  = {15},
-  number  = {2},
-  pages   = {198},
+  journal = {Frontiers in Radiology},
+  volume  = {5},
+  pages   = {1691048},
   year    = {2025},
-  doi     = {10.3390/diagnostics15020198}
+  doi     = {10.3389/fradi.2025.1691048}
 }
 
 @Article{chea2020,
-  author  = {Payam Chea and Jason C. Mandell},
+  author  = {Pauley Chea and Jacob C. Mandell},
   title   = {Current Applications and Future Directions of Deep Learning
              in Musculoskeletal Radiology},
   journal = {Skeletal Radiology},

@@ -113,7 +113,7 @@ alternativos:
 
     \item \textbf{EfficientNet-B0~\cite{tan2019}:} a pesar de tener menos
           parámetros que ResNet-18 (5,3 millones por modelo), esta
-          arquitectura presentaba una convergencia significativamente más
+          arquitectura presentaba una convergencia considerablemente más
           lenta. Tras agotar el tiempo máximo de sesión, la pérdida de
           validación apenas había progresado, mientras que ResNet-18
           alcanzaba valores comparables en una fracción de ese tiempo. Esta
@@ -337,7 +337,7 @@ objetos~\cite{lin2017focal}.
 \label{sec:regularizacion}
 %==========================================================================
 
-El sobreajuste es un riesgo significativo cuando se entrenan 67 millones de 
+El sobreajuste es un riesgo importante cuando se entrenan 67 millones de 
 parámetros (seis ResNet-18) con solo 800 ejemplos de entrenamiento por 
 \textit{fold}. Las cuatro estrategias empleadas se describen en las siguientes subsecciones.
 
@@ -455,7 +455,7 @@ de tratamiento, deterioro articular progresivo, inestabilidad crónica de la
 rodilla y, en casos severos, intervenciones quirúrgicas más complejas. Un
 falso positivo (sospecha de lesión no confirmada) resulta en una derivación a
 revisión por parte del radiólogo y, potencialmente, pruebas complementarias,
-con un coste significativamente menor que el de un falso negativo. Esta
+con un coste mucho menor que el de un falso negativo. Esta
 asimetría determina que el umbral clínico (sensibilidad $\geq$ 85\,\%) sea la
 opción adecuada para un sistema de asistencia al diagnóstico, a pesar de
 producir una especificidad inferior a la que se obtendría con el umbral

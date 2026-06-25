@@ -1,0 +1,20 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Obxectivo: Lista de siglas, abreviaturas, acrónimos, etc. empregados         %
+%            no documento, xunto cos seus respectivos significados.            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newacronym{lca}{LCA}{ligamento cruzado anterior}
+\newacronym{rm}{RM}{resonancia magnética}
+\newacronym{cnn}{CNN}{red neuronal convolucional (\textit{Convolutional Neural Network})}
+\newacronym{resnet}{ResNet}{red residual (\textit{Residual Network})}
+\newacronym{clahe}{CLAHE}{\textit{Contrast Limited Adaptive Histogram Equalization}}
+\newacronym{gradcam}{GradCAM++}{\textit{Gradient-weighted Class Activation Mapping} (versión extendida)}
+\newacronym{auc}{AUC}{área bajo la curva ROC (\textit{Area Under the Curve})}
+\newacronym{roc}{ROC}{\textit{Receiver Operating Characteristic}}
+\newacronym{mil}{MIL}{aprendizaje de múltiple instancia (\textit{Multiple Instance Learning})}
+\newacronym{wbce}{WBCE}{entropía cruzada binaria ponderada (\textit{Weighted Binary Cross-Entropy})}
+\newacronym{pdfs}{PD-FS}{densidad protónica con supresión grasa (\textit{proton density fat-suppressed})}
+\newacronym{mlp}{MLP}{perceptrón multicapa (\textit{Multilayer Perceptron})}
+\newacronym{gpu}{GPU}{unidad de procesamiento gráfico (\textit{Graphics Processing Unit})}
+\newacronym{ic}{IC}{intervalo de confianza}
+\newacronym{tfg}{TFG}{trabajo de fin de grado}

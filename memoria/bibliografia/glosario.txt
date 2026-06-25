@@ -1,0 +1,44 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Obxectivo: Lista de termos empregados no documento,                          %
+%            xunto cos seus respectivos significados.                          %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newglossaryentry{backbone}{
+  name=backbone,
+  description={Red convolucional preentrenada que actúa como extractor de características base del sistema; en este trabajo, ResNet-18}
+}
+
+\newglossaryentry{attentionpooling}{
+  name={attention pooling},
+  description={Mecanismo de agregación que combina las características de todos los cortes de un volumen mediante una media ponderada cuyos pesos aprende el modelo según la relevancia de cada corte}
+}
+
+\newglossaryentry{maxpooling}{
+  name={max pooling},
+  description={Estrategia de agregación que resume un volumen quedándose con la activación máxima entre todos sus cortes}
+}
+
+\newglossaryentry{dropout}{
+  name=dropout,
+  description={Técnica de regularización que desactiva aleatoriamente una fracción de las neuronas durante el entrenamiento para reducir el sobreajuste}
+}
+
+\newglossaryentry{sobreajuste}{
+  name=sobreajuste,
+  description={Fenómeno por el que un modelo se adapta en exceso a los datos de entrenamiento y pierde capacidad de generalizar a datos nuevos}
+}
+
+\newglossaryentry{transferencia}{
+  name={aprendizaje por transferencia},
+  description={Reutilización de un modelo preentrenado en una tarea (en este trabajo, ImageNet) como punto de partida para otra tarea distinta}
+}
+
+\newglossaryentry{fold}{
+  name=fold,
+  description={Cada una de las particiones en que se divide el conjunto de datos en la validación cruzada; el modelo se entrena y evalúa de forma repetida rotando cuál de ellas actúa como conjunto de test}
+}
+
+\newglossaryentry{logit}{
+  name=logit,
+  description={Salida sin normalizar de la red, previa a la función sigmoide o softmax que la convierte en una probabilidad en el rango [0, 1]}
+}

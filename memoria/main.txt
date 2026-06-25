@@ -53,11 +53,8 @@
 % Referencias y bibliografía
 
 
-% Acrónimos y glosario (OPCIONAL - descomentar si usas)
-% \usepackage[acronym]{glossaries}
-% \makeglossaries
-% \input{bibliografia/acronimos}
-% \input{bibliografia/glosario}
+% Acrónimos y glosario: estilo_tfg.sty ya carga glossaries, hace
+% \makeglossaries e \input de acronimos/glosario. NO volver a cargarlo aquí.
 \def\lingua{esp}
 \def\titulacion{gced}
 \def\nome{Jacobo Cousillas Taboada}
@@ -142,7 +139,7 @@
 Gracias a mi familia por el amor y el apoyo incondicional que siempre me habéis dado
 y que me ha ayudado tanto en mi día a día. A vosotros papá y mamá no hay palabras de
 agradecimiento que valgan, Paloma y yo no podemos estar más orgullosos de tener unos 
-padres tan maravillosos, sois nuestro mayor referente y ojalá algún nos podamos llegar
+padres tan maravillosos, sois nuestro mayor referente y ojalá algún día nos podamos llegar
 a parecer a vosotros.
 
 
